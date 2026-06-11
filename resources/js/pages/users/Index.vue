@@ -51,7 +51,7 @@ function updateData() {
             ? { per_page: perPage.value }
             : {}),
     };
-    router.get(route("users.index"), query, {
+    router.get(route("user.index"), query, {
         preserveState: true,
         replace: true,
     });
@@ -67,7 +67,7 @@ const closeDeleteModal = () => {
 };
 const destroy = () => {
     if (!user.value) return;
-    router.delete(route("users.destroy", user.value.id), {
+    router.delete(route("user.destroy", user.value.id), {
         preserveScroll: true,
         onFinish: () => {
             closeDeleteModal();
@@ -75,7 +75,7 @@ const destroy = () => {
     });
 };
 
-const breadcrumbs = [{ title: "Pengguna", href: route("users.index") }];
+const breadcrumbs = [{ title: "Pengguna", href: route("user.index") }];
 </script>
 
 <template>
@@ -89,8 +89,8 @@ const breadcrumbs = [{ title: "Pengguna", href: route("users.index") }];
                 <div class="flex items-center gap-2">
                     <SearchBox v-model="search" />
                     <ButtonCreate
-                        v-if="can('users.create')"
-                        :href="route('users.create')"
+                        v-if="can('user.create')"
+                        :href="route('user.create')"
                     />
                 </div>
             </div>
@@ -128,11 +128,11 @@ const breadcrumbs = [{ title: "Pengguna", href: route("users.index") }];
                         </TableCell>
                         <TableCell class="text-right space-x-2">
                             <ButtonEdit
-                                v-if="can('users.update')"
-                                :href="route('users.edit', item.id)"
+                                v-if="can('user.update')"
+                                :href="route('user.edit', item.id)"
                             />
                             <ButtonDelete
-                                v-if="can('users.delete')"
+                                v-if="can('user.delete')"
                                 @click="confirmDelete(item)"
                             />
                         </TableCell>

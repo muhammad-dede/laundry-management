@@ -71,7 +71,7 @@ class UserController extends Controller
             $user->assignRole($validated['role']);
         });
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
+        return redirect()->route('user.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
     /**
@@ -116,7 +116,7 @@ class UserController extends Controller
             $user->syncRoles([$validated['role']]);
         });
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil diperbarui.');
+        return redirect()->route('user.index')->with('success', 'Pengguna berhasil diperbarui.');
     }
 
     /**
@@ -130,6 +130,6 @@ class UserController extends Controller
             $user->delete();
         });
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
+        return redirect()->route('user.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

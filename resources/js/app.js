@@ -7,7 +7,7 @@ import { ZiggyVue } from "ziggy-js";
 import { initializeTheme } from "./composables/useAppearance";
 
 createInertiaApp({
-    title: (title) => (title ? `${title} | Laravel` : "Laravel"),
+    title: (title) => (title ? `${title} - Laravel` : "Laravel"),
     resolve: (name) => {
         const pages = import.meta.glob("./pages/**/*.vue", { eager: true });
         return pages[`./pages/${name}.vue`];

@@ -28,9 +28,15 @@ const mainNavItems = [
         subMenus: [
             {
                 title: "Pengguna",
-                href: route("users.index"),
-                routeMatch: "users.*",
-                permission: "users.view-any",
+                href: route("user.index"),
+                routeMatch: "user.*",
+                permission: "user.view",
+            },
+            {
+                title: "Layanan",
+                href: route("service.index"),
+                routeMatch: "service.*",
+                permission: "service.view",
             },
         ],
     },

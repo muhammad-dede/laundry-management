@@ -29,14 +29,14 @@ const form = useForm({
 
 const submit = () => {
     form.clearErrors();
-    form.post(route("users.store"), {
+    form.post(route("user.store"), {
         preserveScroll: true,
     });
 };
 
 const breadcrumbs = [
-    { title: "Pengguna", href: route("users.index") },
-    { title: "Tambah Pengguna", href: route("users.create") },
+    { title: "Pengguna", href: route("user.index") },
+    { title: "Tambah Pengguna", href: route("user.create") },
 ];
 </script>
 
@@ -142,7 +142,7 @@ const breadcrumbs = [
                 </div>
                 <Field orientation="horizontal">
                     <ButtonSubmit />
-                    <ButtonCancel :href="route('users.index')" />
+                    <ButtonCancel :href="route('user.index')" />
                 </Field>
             </form>
         </AppMain>
