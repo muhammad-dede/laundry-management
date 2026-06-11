@@ -15,8 +15,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/create', 'create')->name('users.create')->middleware('can:users.create');
             Route::post('/', 'store')->name('users.store')->middleware('can:users.create');
             Route::get('/{id}/edit', 'edit')->name('users.edit')->middleware('can:users.update');
-            Route::post('/{id}/update', 'update')->name('users.update')->middleware('can:users.update');
-            Route::post('/{id}/destroy', 'destroy')->name('users.destroy')->middleware('can:users.delete');
+            Route::put('/{id}/update', 'update')->name('users.update')->middleware('can:users.update');
+            Route::delete('/{id}/destroy', 'destroy')->name('users.destroy')->middleware('can:users.delete');
         });
     });
 });

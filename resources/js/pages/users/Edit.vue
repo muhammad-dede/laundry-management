@@ -21,6 +21,7 @@ const props = defineProps({
 
 const form = useForm({
     name: props.user.name,
+    username: props.user.username,
     email: props.user.email,
     role: props.user.roles.length ? props.user.roles[0].name : "",
     password: "",
@@ -64,6 +65,21 @@ const breadcrumbs = [
                         </FieldError>
                     </Field>
                     <Field>
+                        <FieldLabel for="username">Username</FieldLabel>
+                        <Input
+                            id="username"
+                            type="text"
+                            placeholder="Masukkan username"
+                            autocomplete="off"
+                            v-model="form.username"
+                        />
+                        <FieldError>
+                            {{ form.errors.username }}
+                        </FieldError>
+                    </Field>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-3 mb-3">
+                    <Field>
                         <FieldLabel for="email">Email</FieldLabel>
                         <Input
                             id="email"
@@ -76,8 +92,6 @@ const breadcrumbs = [
                             {{ form.errors.email }}
                         </FieldError>
                     </Field>
-                </div>
-                <div class="grid lg:grid-cols-2 gap-3 mb-3">
                     <Field>
                         <FieldLabel for="role">Role</FieldLabel>
                         <Select v-model="form.role" name="role">

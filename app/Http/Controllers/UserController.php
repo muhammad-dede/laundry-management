@@ -63,6 +63,7 @@ class UserController extends Controller
         DB::transaction(function () use ($validated) {
             $user = User::create([
                 'name' => $validated['name'],
+                'username' => $validated['username'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
@@ -105,6 +106,7 @@ class UserController extends Controller
         DB::transaction(function () use ($validated, $id) {
             $user = User::where('id', '!=', Auth::id())->findOrFail($id);
             $user->name = $validated['name'];
+            $user->username = $validated['username'];
             $user->email = $validated['email'];
             if (!empty($validated['password'])) {
                 $user->password = Hash::make($validated['password']);

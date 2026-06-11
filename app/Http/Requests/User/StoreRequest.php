@@ -23,7 +23,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'username' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[a-zA-Z0-9_]+$/', 'unique:users,username'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', 'string', 'exists:roles,name'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
@@ -38,6 +39,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'name' => 'Nama',
+            'username' => 'Username',
             'email' => 'Email',
             'role' => 'Role',
             'password' => 'Password',

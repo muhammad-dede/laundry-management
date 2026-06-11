@@ -99,6 +99,7 @@ const breadcrumbs = [{ title: "Pengguna", href: route("users.index") }];
                     <TableRow>
                         <TableHead class="w-10">No.</TableHead>
                         <TableHead>Nama</TableHead>
+                        <TableHead>Username</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Role</TableHead>
                         <TableHead class="text-right">Action</TableHead>
@@ -120,6 +121,7 @@ const breadcrumbs = [{ title: "Pengguna", href: route("users.index") }];
                     >
                         <TableCell>{{ index + 1 }}</TableCell>
                         <TableCell>{{ item.name ?? "-" }}</TableCell>
+                        <TableCell>{{ item.username ?? "-" }}</TableCell>
                         <TableCell>{{ item.email ?? "-" }}</TableCell>
                         <TableCell>
                             {{ item.roles[0]?.name ?? "-" }}
