@@ -30,6 +30,17 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::delete('/{id}/destroy', 'destroy')->name('service.destroy')->middleware('can:service.delete');
         });
     });
+
+    Route::prefix('customer')->group(function () {
+        Route::controller(App\Http\Controllers\CustomerController::class)->group(function () {
+            Route::get('/', 'index')->name('customer.index')->middleware('can:customer.view');
+            Route::get('/create', 'create')->name('customer.create')->middleware('can:customer.create');
+            Route::post('/', 'store')->name('customer.store')->middleware('can:customer.create');
+            Route::get('/{id}/edit', 'edit')->name('customer.edit')->middleware('can:customer.update');
+            Route::put('/{id}/update', 'update')->name('customer.update')->middleware('can:customer.update');
+            Route::delete('/{id}/destroy', 'destroy')->name('customer.destroy')->middleware('can:customer.delete');
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';

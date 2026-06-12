@@ -38,6 +38,12 @@ const mainNavItems = [
                 routeMatch: "service.*",
                 permission: "service.view",
             },
+            {
+                title: "Pelanggan",
+                href: route("customer.index"),
+                routeMatch: "customer.*",
+                permission: "customer.view",
+            },
         ],
     },
 ];
