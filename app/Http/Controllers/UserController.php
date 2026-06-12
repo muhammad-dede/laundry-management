@@ -35,7 +35,7 @@ class UserController extends Controller
             ->paginate($per_page)
             ->withQueryString();
 
-        return Inertia::render('users/Index', [
+        return Inertia::render('user/Index', [
             'filters' => $filters,
             'data' => $data,
         ]);
@@ -48,7 +48,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
 
-        return Inertia::render('users/Create', [
+        return Inertia::render('user/Create', [
             'roles' => $roles,
         ]);
     }
@@ -90,7 +90,7 @@ class UserController extends Controller
         $user = User::with('roles')->where('id', '!=', Auth::id())->findOrFail($id);
         $roles = Role::all();
 
-        return Inertia::render('users/Edit', [
+        return Inertia::render('user/Edit', [
             'user' => $user,
             'roles' => $roles,
         ]);
