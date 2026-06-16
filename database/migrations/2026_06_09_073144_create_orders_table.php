@@ -16,12 +16,13 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->unsignedBigInteger('customer_id')->index();
             $table->dateTime('order_date');
-            $table->date('estimated_finish_date')->nullable();
+            $table->dateTime('estimated_finish_date')->nullable();
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('grand_total', 15, 2)->default(0);
-            $table->string('payment_status')->default('UNPAID'); // UNPAID, PARTIAL, PAID
-            $table->string('order_status')->default('RECEIVED'); // RECEIVED, PROCESSING, READY, DELIVERED, COMPLETED
+            $table->string('payment_type')->default('FULL_PAYMENT'); // FULL_PAYMENT, PAY_LATER
+            $table->string('payment_status')->default('UNPAID'); // UNPAID, PAID
+            $table->string('order_status')->default('QUEUED'); // , QUEUED, PROCESS, READY, COMPLETED
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->timestamps();

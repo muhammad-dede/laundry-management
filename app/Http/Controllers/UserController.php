@@ -104,7 +104,7 @@ class UserController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $id) {
-            $user = User::where('id', '!=', Auth::id())->findOrFail($id);
+            $user = User::query()->where('id', '!=', Auth::id())->findOrFail($id);
             $user->name = $validated['name'];
             $user->username = $validated['username'];
             $user->email = $validated['email'];
@@ -125,9 +125,9 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         DB::transaction(function () use ($id) {
-            $user = User::where('id', '!=', Auth::id())->findOrFail($id);
+            $user = User::query()->where('id', '!=', Auth::id())->findOrFail($id);
             $user->roles()->detach();
-            $user->delete();
+            $user->query()->delete();
         });
 
         return redirect()->route('user.index')->with('success', 'Pengguna berhasil dihapus.');

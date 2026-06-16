@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order_status_histories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('order_id')->index();
-            $table->string('status')->default('RECEIVED'); // RECEIVED, WASHING, IRONING, READY, DELIVERED, COMPLETED
+            $table->string('status')->default('QUEUED');  // , QUEUED, PROCESS, READY, COMPLETED
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->timestamps();

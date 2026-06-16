@@ -11,7 +11,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@inertiajs/vue3";
-import { LayoutGrid, Database } from "lucide-vue-next";
+import { LayoutGrid, Database, ScrollText } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
 const mainNavItems = [
@@ -45,6 +45,13 @@ const mainNavItems = [
                 permission: "customer.view",
             },
         ],
+    },
+    {
+        icon: ScrollText,
+        title: "Transaksi",
+        href: route("order.index"),
+        routeMatch: "order.*",
+        permission: "order.view",
     },
 ];
 </script>

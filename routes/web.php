@@ -41,6 +41,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::delete('/{id}/destroy', 'destroy')->name('customer.destroy')->middleware('can:customer.delete');
         });
     });
+
+    Route::prefix('order')->group(function () {
+        Route::controller(App\Http\Controllers\OrderController::class)->group(function () {
+            Route::get('/', 'index')->name('order.index')->middleware('can:order.view');
+            Route::get('/create', 'create')->name('order.create')->middleware('can:order.create');
+            Route::post('/', 'store')->name('order.store')->middleware('can:order.create');
+            Route::get('/{id}', 'show')->name('order.show')->middleware('can:order.detail');
+            Route::get('/{id}/edit', 'edit')->name('order.edit')->middleware('can:order.update');
+            Route::put('/{id}/update', 'update')->name('order.update')->middleware('can:order.update');
+            Route::delete('/{id}/destroy', 'destroy')->name('order.destroy')->middleware('can:order.delete');
+            Route::get('/search/customer', 'searchCustomer')->name('order.searchCustomer')->middleware('can:order.view');
+            Route::put('/{id}/order-status', 'orderStatusUpdate')->name('order.status.update')->middleware('can:order.update');
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';

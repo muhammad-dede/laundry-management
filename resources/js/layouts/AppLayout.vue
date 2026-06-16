@@ -19,14 +19,14 @@ const flashMessage = computed(() => {
     const flash = usePage().props.flash;
     return {
         success: flash.success,
-        failed: flash.failed,
-        hasMessage: !!(flash.success || flash.failed),
+        error: flash.error,
+        hasMessage: !!(flash.success || flash.error),
     };
 });
 const flashKey = computed(() => {
     const flash = flashMessage.value;
     return flash.hasMessage
-        ? `${flash.success || flash.failed}-${Date.now()}`
+        ? `${flash.success || flash.error}-${Date.now()}`
         : null;
 });
 </script>
@@ -44,6 +44,6 @@ const flashKey = computed(() => {
         v-if="flashMessage.hasMessage"
         :key="flashKey"
         :type="flashMessage.success ? 'success' : 'error'"
-        :message="flashMessage.success || flashMessage.failed"
+        :message="flashMessage.success || flashMessage.error"
     />
 </template>
