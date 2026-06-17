@@ -10,16 +10,16 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import AppLayout from "@/layouts/AppLayout.vue";
 import AppMain from "@/components/AppMain.vue";
 import SearchBox from "@/components/SearchBox.vue";
@@ -150,23 +150,23 @@ const breadcrumbs = [{ title: "Layanan", href: route("service.index") }];
             <Pagination v-model="perPage" :pagination="props.data" />
         </AppMain>
     </AppLayout>
-    <AlertDialog :open="!!showDeleteModal">
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>
-                    Apakah Anda benar-benar yakin?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
+    <Dialog v-model:open="showDeleteModal">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle> Apakah Anda benar-benar yakin?</DialogTitle>
+                <DialogDescription>
                     Tindakan ini tidak dapat dibatalkan. Ini akan secara
                     permanen menghapus data terkait dari server kami.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel @click="closeDeleteModal">
-                    Batal
-                </AlertDialogCancel>
-                <AlertDialogAction @click="destroy">Hapus</AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+                <DialogClose as-child>
+                    <Button variant="outline" @click="closeDeleteModal">
+                        Batal
+                    </Button>
+                </DialogClose>
+                <Button type="button" @click="destroy">Hapus</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>
