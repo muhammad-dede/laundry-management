@@ -7,6 +7,7 @@ use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\PaymentTypeEnum;
 use App\Http\Requests\Order\StoreRequest;
+use App\Http\Requests\Order\UpdateRequest;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Service;
@@ -68,7 +69,7 @@ class OrderController extends Controller
     {
         $validated = $request->validated();
 
-        DB::transaction(function () use ($validated) {
+        $order =  DB::transaction(function () use ($validated) {
             // Customer
             $customer = Customer::firstOrCreate(
                 [
@@ -145,7 +146,7 @@ class OrderController extends Controller
             ]);
 
             if ($paymentType === PaymentTypeEnum::FULL_PAYMENT) {
-                $order->payments()->create([
+                $order->payment()->create([
                     'payment_date' => now(),
                     'amount' => $grandTotal,
                     'payment_method' => $validated['payment_method'],
@@ -153,9 +154,11 @@ class OrderController extends Controller
                     'created_by' => Auth::id(),
                 ]);
             }
+
+            return $order;
         });
 
-        return redirect()->route('order.index')->with('success', 'Transaksi berhasil ditambahkan.');
+        return redirect()->route('order.show', $order->id)->with('success', 'Transaksi berhasil ditambahkan.');
     }
 
     /**
@@ -163,7 +166,11 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment'])->findOrFail($id);
+        return Inertia::render('order/Show', [
+            'order' => $order,
+            'paymentMethodOptions' => PaymentMethodEnum::options(),
+        ]);
     }
 
     /**
@@ -171,15 +178,124 @@ class OrderController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment'])->findOrFail($id);
+
+        if ($order->order_status !== OrderStatusEnum::QUEUED) {
+            return redirect()->route('order.show', $order->id)->with('error', 'Transaksi tidak dapat diedit.');
+        }
+
+        $services = Service::query()->where('is_active', true)->get();
+
+        return Inertia::render('order/Edit', [
+            'order' => $order,
+            'services' => $services,
+            'paymentTypeOptions' => PaymentTypeEnum::options(),
+            'paymentMethodOptions' => PaymentMethodEnum::options(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request, string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+
+        if ($order->order_status !== OrderStatusEnum::QUEUED) {
+            return back()->with('error', 'Transaksi tidak dapat diedit.');
+        }
+
+        $validated = $request->validated();
+
+        DB::transaction(function () use ($validated, $order) {
+
+            $customer = Customer::firstOrCreate(
+                [
+                    'phone' => $validated['customer_phone'],
+                ],
+                [
+                    'code' => 'CUST-' . time(),
+                    'name' => strtoupper($validated['customer_name']),
+                    'address' => $validated['customer_address'] ?? null,
+                ]
+            );
+
+            $customer->update([
+                'name' => strtoupper($validated['customer_name']),
+                'address' => $validated['customer_address'] ?? null,
+            ]);
+
+            $totalAmount = 0;
+            $maxEstimatedDays = 0;
+            $details = [];
+
+            foreach ($validated['order_detail'] as $item) {
+                $service = Service::query()->where('is_active', true)->findOrFail($item['service_id']);
+
+                $price = $service->price;
+                $subtotal = $price * $item['quantity'];
+
+                $totalAmount += $subtotal;
+
+                $maxEstimatedDays = max(
+                    $maxEstimatedDays,
+                    $service->estimated_days
+                );
+
+                $details[] = [
+                    'service_id' => $service->id,
+                    'quantity' => $item['quantity'],
+                    'price' => $price,
+                    'subtotal' => $subtotal,
+                ];
+            }
+
+            $discount = $validated['discount'] ?? 0;
+
+            $grandTotal = max(0, $totalAmount - $discount);
+
+            if ($validated['payment_type'] === PaymentTypeEnum::FULL_PAYMENT->value) {
+                $paymentType = PaymentTypeEnum::FULL_PAYMENT;
+                $paymentStatus = PaymentStatusEnum::PAID;
+            } else {
+                $paymentType = PaymentTypeEnum::PAY_LATER;
+                $paymentStatus = PaymentStatusEnum::UNPAID;
+            }
+
+            $estimatedFinishDate = now()->addDays($maxEstimatedDays);
+
+            $order->update([
+                'customer_id' => $customer->id,
+                'estimated_finish_date' => $estimatedFinishDate,
+                'total_amount' => $totalAmount,
+                'discount' => $discount,
+                'grand_total' => $grandTotal,
+                'payment_type' => $paymentType,
+                'payment_status' => $paymentStatus,
+                'notes' => $validated['notes'] ?? null,
+            ]);
+
+            $order->orderDetails()->delete();
+
+            foreach ($details as $detail) {
+                $order->orderDetails()->create($detail);
+            }
+
+            if ($paymentType === PaymentTypeEnum::FULL_PAYMENT) {
+                $order->payment()->delete();
+                $order->payment()->create([
+                    'payment_date' => now(),
+                    'amount' => $grandTotal,
+                    'payment_method' => $validated['payment_method'],
+                    'notes' => 'Bayar Lunas',
+                    'created_by' => Auth::id(),
+                ]);
+            } else {
+                $order->payment()->delete();
+            }
+        });
+
+        return redirect()->route('order.show', $order->id)->with('success', 'Transaksi berhasil diperbarui.');
     }
 
     /**
@@ -187,7 +303,12 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        DB::transaction(function () use ($id) {
+            $service = Order::findOrFail($id);
+            $service->delete();
+        });
+
+        return redirect()->route('order.index')->with('success', 'Transaksi berhasil dihapus.');
     }
 
     public function searchCustomer(Request $request)
@@ -209,22 +330,23 @@ class OrderController extends Controller
             ]);
     }
 
-    public function orderStatusUpdate(Request $request, string $id)
+    public function updateStatus(string $id)
     {
         $order = Order::findOrFail($id);
 
         if ($order->order_status === OrderStatusEnum::COMPLETED) {
-            return back()->with('error', 'Pesanan sudah selesai.');
+            return back()->with('error', 'Transaksi sudah selesai.');
         }
 
         $newStatus = match ($order->order_status) {
             OrderStatusEnum::QUEUED => OrderStatusEnum::PROCESS,
             OrderStatusEnum::PROCESS => OrderStatusEnum::READY,
+            OrderStatusEnum::READY => OrderStatusEnum::COMPLETED,
             default => null,
         };
 
-        if (!$newStatus) {
-            return back()->with('error', 'Pesanan belum bisa diselesaikan karena pembayaran belum lunas.');
+        if ($newStatus === OrderStatusEnum::COMPLETED && $order->payment_status === PaymentStatusEnum::UNPAID) {
+            return back()->with('error', 'Lakukan pembayaran sebelum menyelesaikan transaksi.');
         }
 
         DB::transaction(function () use ($order, $newStatus) {
@@ -240,5 +362,28 @@ class OrderController extends Controller
         });
 
         return back()->with('success', 'Status berhasil diubah menjadi ' . $newStatus->label());
+    }
+
+    public function payment(Request $request, string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->payment_status === PaymentStatusEnum::PAID) {
+            return back()->with('error', 'Pembayaran sudah dilakukan.');
+        }
+
+        DB::transaction(function () use ($order, $request) {
+            $order->update([
+                'payment_status' => PaymentStatusEnum::PAID,
+            ]);
+            $order->payment()->create([
+                'payment_date' => Carbon::now(),
+                'amount' => $order->grand_total ?? 0,
+                'payment_method' => $request->payment_method,
+                'notes' => 'Bayar Nanti Lunas',
+                'created_by' => Auth::id(),
+            ]);
+        });
+        return redirect()->back()->with('success', 'Pembayaran berhasil disimpan.');
     }
 }

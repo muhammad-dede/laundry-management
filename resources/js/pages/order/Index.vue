@@ -10,16 +10,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import AppLayout from "@/layouts/AppLayout.vue";
 import AppMain from "@/components/AppMain.vue";
 import SearchBox from "@/components/SearchBox.vue";
@@ -32,6 +22,16 @@ import usePermissions from "@/composables/usePermissions";
 import useFormatter from "@/composables/useFormatter";
 import useStatusBadge from "@/composables/useStatusBadge";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 const { can } = usePermissions();
 const { currency, date, time } = useFormatter();
@@ -79,6 +79,14 @@ const destroy = () => {
             closeDeleteModal();
         },
     });
+};
+
+const canEdit = (item) => {
+    return item.order_status === "QUEUED";
+};
+
+const canDelete = (item) => {
+    return item.order_status === "QUEUED" && item.payment_status === "UNPAID";
 };
 
 const breadcrumbs = [{ title: "Transaksi", href: route("order.index") }];
@@ -170,11 +178,11 @@ const breadcrumbs = [{ title: "Transaksi", href: route("order.index") }];
                                 :href="route('order.show', item.id)"
                             />
                             <ButtonEdit
-                                v-if="can('order.update')"
+                                v-if="can('order.update') && canEdit(item)"
                                 :href="route('order.edit', item.id)"
                             />
                             <ButtonDelete
-                                v-if="can('order.delete')"
+                                v-if="can('order.delete') && canDelete(item)"
                                 @click="confirmDelete(item)"
                             />
                         </TableCell>
@@ -184,23 +192,23 @@ const breadcrumbs = [{ title: "Transaksi", href: route("order.index") }];
             <Pagination v-model="perPage" :pagination="props.data" />
         </AppMain>
     </AppLayout>
-    <AlertDialog :open="!!showDeleteModal">
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>
-                    Apakah Anda benar-benar yakin?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
+    <Dialog v-model:open="showDeleteModal">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle> Apakah Anda benar-benar yakin?</DialogTitle>
+                <DialogDescription>
                     Tindakan ini tidak dapat dibatalkan. Ini akan secara
                     permanen menghapus data terkait dari server kami.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel @click="closeDeleteModal">
-                    Batal
-                </AlertDialogCancel>
-                <AlertDialogAction @click="destroy">Hapus</AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+                <DialogClose as-child>
+                    <Button variant="outline" @click="closeDeleteModal">
+                        Batal
+                    </Button>
+                </DialogClose>
+                <Button type="button" @click="destroy">Hapus</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>

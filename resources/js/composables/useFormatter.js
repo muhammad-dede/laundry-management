@@ -35,11 +35,13 @@ export default function useFormatter() {
     const time = (value) => {
         if (!value) return "-";
 
-        return new Intl.DateTimeFormat("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-        }).format(new Date(value));
+        const date = new Date(value);
+
+        return [
+            String(date.getHours()).padStart(2, "0"),
+            String(date.getMinutes()).padStart(2, "0"),
+            String(date.getSeconds()).padStart(2, "0"),
+        ].join(":");
     };
 
     return {
