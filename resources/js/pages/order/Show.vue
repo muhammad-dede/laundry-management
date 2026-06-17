@@ -379,6 +379,13 @@ const breadcrumbs = [
             <Separator class="my-2" />
             <Field orientation="horizontal">
                 <ButtonCancel title="Kembali" :href="route('order.index')" />
+                <Button
+                    as="a"
+                    :href="route('order.print', props.order.id)"
+                    target="_blank"
+                >
+                    Cetak Nota
+                </Button>
                 <Dialog v-model:open="openUpdateStatus">
                     <DialogTrigger as-child>
                         <Button type="button" v-if="canUpdateStatus"

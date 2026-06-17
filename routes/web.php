@@ -51,9 +51,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/{id}/edit', 'edit')->name('order.edit')->middleware('can:order.update');
             Route::put('/{id}/update', 'update')->name('order.update')->middleware('can:order.update');
             Route::delete('/{id}/destroy', 'destroy')->name('order.destroy')->middleware('can:order.delete');
-            Route::get('/search/customer', 'searchCustomer')->name('order.searchCustomer')->middleware('can:order.view');
-            Route::put('/{id}/update-status', 'updateStatus')->name('order.update.status')->middleware('can:order.update');
-            Route::put('/{id}/payment', 'payment')->name('order.payment')->middleware('can:order.update');
+            // External
+            Route::get('/search/customer', 'searchCustomer')->name('order.searchCustomer');
+            Route::put('/{id}/update-status', 'updateStatus')->name('order.update.status');
+            Route::put('/{id}/payment', 'payment')->name('order.payment');
+            Route::get('/{id}/print', 'print')->name('order.print');
         });
     });
 });

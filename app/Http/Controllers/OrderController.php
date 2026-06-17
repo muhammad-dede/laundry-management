@@ -386,4 +386,12 @@ class OrderController extends Controller
         });
         return redirect()->back()->with('success', 'Pembayaran berhasil disimpan.');
     }
+
+    public function print(string $id)
+    {
+        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment'])->findOrFail($id);
+        return Inertia::render('order/Print', [
+            'order' => $order,
+        ]);
+    }
 }
