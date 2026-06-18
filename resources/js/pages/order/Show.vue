@@ -250,7 +250,7 @@ const breadcrumbs = [
                 <CardContent>
                     <HeadingSmall
                         title="Informasi Detail Layanan"
-                        description="Detail Layanan Pesanan"
+                        description="Detail layanan pesanan"
                     />
                     <Separator class="my-3" />
                     <Table>
