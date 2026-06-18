@@ -89,17 +89,17 @@ const canDelete = (item) => {
     return item.order_status === "QUEUED" && item.payment_status === "UNPAID";
 };
 
-const breadcrumbs = [{ title: "Transaksi", href: route("order.index") }];
+const breadcrumbs = [{ title: "Pesanan", href: route("order.index") }];
 </script>
 
 <template>
-    <Head title="Transaksi" />
+    <Head title="Pesanan" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <AppMain>
             <div
                 class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"
             >
-                <h2 class="text-lg md:text-xl font-bold">Kelola Transaksi</h2>
+                <h2 class="text-lg md:text-xl font-bold">Kelola Pesanan</h2>
                 <div class="flex items-center gap-2">
                     <SearchBox v-model="search" />
                     <ButtonCreate
@@ -114,11 +114,11 @@ const breadcrumbs = [{ title: "Transaksi", href: route("order.index") }];
                         <TableHead class="w-10">No.</TableHead>
                         <TableHead>Invoice</TableHead>
                         <TableHead>Pelanggan</TableHead>
-                        <TableHead>Tgl Transaksi</TableHead>
+                        <TableHead>Tgl Pesanan</TableHead>
                         <TableHead>Estimasi</TableHead>
                         <TableHead>Total</TableHead>
                         <TableHead>Status Pembayaran</TableHead>
-                        <TableHead>Status Transaksi</TableHead>
+                        <TableHead>Status Pesanan</TableHead>
                         <TableHead class="text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>

@@ -213,19 +213,19 @@ const submit = () => {
 };
 
 const breadcrumbs = [
-    { title: "Transaksi", href: route("order.index") },
-    { title: "Tambah Transaksi", href: route("order.create") },
+    { title: "Pesanan", href: route("order.index") },
+    { title: "Tambah Pesanan", href: route("order.create") },
 ];
 </script>
 
 <template>
-    <Head title="Tambah Transaksi" />
+    <Head title="Tambah Pesanan" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <AppMain>
             <div
                 class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"
             >
-                <h2 class="text-lg md:text-xl font-bold">Tambah Transaksi</h2>
+                <h2 class="text-lg md:text-xl font-bold">Tambah Pesanan</h2>
             </div>
             <form @submit.prevent="submit" class="w-full">
                 <!-- Customer -->
@@ -307,7 +307,7 @@ const breadcrumbs = [
                 <!-- Layanan -->
                 <Separator class="my-3" />
                 <HeadingSmall
-                    title="Informasi Transaksi"
+                    title="Informasi Pesanan"
                     description="Pilih layanan dan jumlah yang diinginkan"
                 />
                 <div class="flex my-3">

@@ -66,7 +66,7 @@ class PermissionSeeder extends Seeder
             'expense.create',
             'expense.update',
             'expense.delete',
-            // Pemasukan Non Transaksi
+            // Pemasukan Non Pesanan
             'income.view',
             'income.create',
             'income.update',
@@ -75,7 +75,7 @@ class PermissionSeeder extends Seeder
             'notification.view',
             'notification.send',
             'notification.resend',
-            // Laporan Transaksi
+            // Laporan Pesanan
             'report.transaction.view',
             'report.transaction.export',
             // Laporan Pembayaran

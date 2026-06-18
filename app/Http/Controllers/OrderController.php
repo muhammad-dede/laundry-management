@@ -180,7 +180,7 @@ class OrderController extends Controller
             $message
         );
 
-        return redirect()->route('order.show', $order->id)->with('success', 'Transaksi berhasil ditambahkan.');
+        return redirect()->route('order.show', $order->id)->with('success', 'Pesanan berhasil ditambahkan.');
     }
 
     /**
@@ -203,7 +203,7 @@ class OrderController extends Controller
         $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment'])->findOrFail($id);
 
         if ($order->order_status !== OrderStatusEnum::QUEUED) {
-            return redirect()->route('order.show', $order->id)->with('error', 'Transaksi tidak dapat diedit.');
+            return redirect()->route('order.show', $order->id)->with('error', 'Pesanan tidak dapat diedit.');
         }
 
         $services = Service::query()->where('is_active', true)->get();
@@ -224,7 +224,7 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
 
         if ($order->order_status !== OrderStatusEnum::QUEUED) {
-            return back()->with('error', 'Transaksi tidak dapat diedit.');
+            return back()->with('error', 'Pesanan tidak dapat diedit.');
         }
 
         $validated = $request->validated();
@@ -317,7 +317,7 @@ class OrderController extends Controller
             }
         });
 
-        return redirect()->route('order.show', $order->id)->with('success', 'Transaksi berhasil diperbarui.');
+        return redirect()->route('order.show', $order->id)->with('success', 'Pesanan berhasil diperbarui.');
     }
 
     /**
@@ -330,7 +330,7 @@ class OrderController extends Controller
             $service->delete();
         });
 
-        return redirect()->route('order.index')->with('success', 'Transaksi berhasil dihapus.');
+        return redirect()->route('order.index')->with('success', 'Pesanan berhasil dihapus.');
     }
 
     public function searchCustomer(Request $request)
@@ -357,7 +357,7 @@ class OrderController extends Controller
         $order = Order::with('customer')->findOrFail($id);
 
         if ($order->order_status === OrderStatusEnum::COMPLETED) {
-            return back()->with('error', 'Transaksi sudah selesai.');
+            return back()->with('error', 'Pesanan sudah selesai.');
         }
 
         $newStatus = match ($order->order_status) {
@@ -368,7 +368,7 @@ class OrderController extends Controller
         };
 
         if ($newStatus === OrderStatusEnum::COMPLETED && $order->payment_status === PaymentStatusEnum::UNPAID) {
-            return back()->with('error', 'Lakukan pembayaran sebelum menyelesaikan transaksi.');
+            return back()->with('error', 'Lakukan pembayaran sebelum menyelesaikan pesanan.');
         }
 
         DB::transaction(function () use ($order, $newStatus) {

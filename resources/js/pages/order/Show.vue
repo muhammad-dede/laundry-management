@@ -140,26 +140,26 @@ const canPayment = computed(() => {
 });
 
 const breadcrumbs = [
-    { title: "Transaksi", href: route("order.index") },
-    { title: "Detail Transaksi", href: route("order.show", props.order?.id) },
+    { title: "Pesanan", href: route("order.index") },
+    { title: "Detail Pesanan", href: route("order.show", props.order?.id) },
 ];
 </script>
 
 <template>
-    <Head title="Detail Transaksi" />
+    <Head title="Detail Pesanan" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <AppMain>
             <div
                 class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"
             >
-                <h2 class="text-lg md:text-xl font-bold">Detail Transaksi</h2>
+                <h2 class="text-lg md:text-xl font-bold">Detail Pesanan</h2>
             </div>
-            <!-- Informasi Transaksi -->
+            <!-- Informasi Pesanan -->
             <Card class="w-full py-4">
                 <CardContent>
                     <HeadingSmall
-                        title="Informasi Transaksi"
-                        description="Detail transaksi laundry"
+                        title="Informasi Pesanan"
+                        description="Detail pesanan laundry"
                     />
                     <Separator class="my-3" />
                     <div class="grid mb-3">
@@ -190,7 +190,7 @@ const breadcrumbs = [
                     </div>
                     <div class="grid mb-3">
                         <p class="text-sm text-muted-foreground">
-                            Tanggal Transaksi
+                            Tanggal Pesanan
                         </p>
                         <p class="font-medium">
                             {{ date(props.order?.order_date) ?? "-" }} .
@@ -229,7 +229,7 @@ const breadcrumbs = [
                     </div>
                     <div class="grid">
                         <p class="text-sm text-muted-foreground mb-1">
-                            Status Transaksi
+                            Status Pesanan
                         </p>
                         <Badge
                             :class="
@@ -250,7 +250,7 @@ const breadcrumbs = [
                 <CardContent>
                     <HeadingSmall
                         title="Informasi Detail Layanan"
-                        description="Detail Layanan Transaksi"
+                        description="Detail Layanan Pesanan"
                     />
                     <Separator class="my-3" />
                     <Table>
@@ -332,7 +332,7 @@ const breadcrumbs = [
                 <CardContent>
                     <HeadingSmall
                         title="Ringkasan Pembayaran"
-                        description="Informasi total tagihan transaksi"
+                        description="Informasi total tagihan pesanan"
                     />
                     <Separator class="my-3" />
                     <div class="space-y-3">
@@ -394,10 +394,10 @@ const breadcrumbs = [
                     </DialogTrigger>
                     <DialogContent class="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle> Update Status Transaksi </DialogTitle>
+                            <DialogTitle> Update Status Pesanan </DialogTitle>
                             <DialogDescription>
-                                Apakah Anda yakin ingin mengubah status
-                                transaksi ini?
+                                Apakah Anda yakin ingin mengubah status pesanan
+                                ini?
                             </DialogDescription>
                         </DialogHeader>
                         <div class="flex items-center justify-center gap-4">
@@ -453,7 +453,7 @@ const breadcrumbs = [
                         <DialogHeader>
                             <DialogTitle>Bayar Tagihan</DialogTitle>
                             <DialogDescription>
-                                Transaksi harus dibayar terlebih dahulu sebelum
+                                Pesanan harus dibayar terlebih dahulu sebelum
                                 dapat diselesaikan.
                             </DialogDescription>
                         </DialogHeader>

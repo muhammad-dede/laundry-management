@@ -67,7 +67,7 @@ class RoleSeeder extends Seeder
                     'expense.create',
                     'expense.update',
                     'expense.delete',
-                    // Pemasukan Non Transaksi
+                    // Pemasukan Non Pesanan
                     'income.view',
                     'income.create',
                     'income.update',
@@ -76,7 +76,7 @@ class RoleSeeder extends Seeder
                     'notification.view',
                     'notification.send',
                     'notification.resend',
-                    // Laporan Transaksi
+                    // Laporan Pesanan
                     'report.transaction.view',
                     // Laporan Pembayaran
                     'report.payment.view',

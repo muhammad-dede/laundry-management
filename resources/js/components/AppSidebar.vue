@@ -11,34 +11,41 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@inertiajs/vue3";
-import { LayoutGrid, Database, ScrollText } from "lucide-vue-next";
+import { LayoutGrid, User, Users, Shirt, ShoppingCart } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
 const mainNavItems = [
     {
-        icon: LayoutGrid,
-        title: "Dashboard",
-        href: route("dashboard"),
-        routeMatch: "dashboard",
-        permission: "dashboard.view",
+        title: "Menu Utama",
+        items: [
+            {
+                icon: LayoutGrid,
+                title: "Dashboard",
+                href: route("dashboard"),
+                routeMatch: "dashboard",
+                permission: "dashboard.view",
+            },
+        ],
     },
     {
-        icon: Database,
         title: "Master Data",
-        subMenus: [
+        items: [
             {
+                icon: User,
                 title: "Pengguna",
                 href: route("user.index"),
                 routeMatch: "user.*",
                 permission: "user.view",
             },
             {
+                icon: Shirt,
                 title: "Layanan",
                 href: route("service.index"),
                 routeMatch: "service.*",
                 permission: "service.view",
             },
             {
+                icon: Users,
                 title: "Pelanggan",
                 href: route("customer.index"),
                 routeMatch: "customer.*",
@@ -47,11 +54,16 @@ const mainNavItems = [
         ],
     },
     {
-        icon: ScrollText,
         title: "Transaksi",
-        href: route("order.index"),
-        routeMatch: "order.*",
-        permission: "order.view",
+        items: [
+            {
+                icon: ShoppingCart,
+                title: "Pesanan",
+                href: route("order.index"),
+                routeMatch: "order.*",
+                permission: "order.view",
+            },
+        ],
     },
 ];
 </script>
