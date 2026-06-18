@@ -27,7 +27,7 @@ onMounted(() => {
 
     <div class="receipt">
         <div class="header">
-            <h2>LAUNDRY</h2>
+            <h2>Laundry-Koe</h2>
             <p>Jl. Contoh No. 123</p>
             <p>08123456789</p>
         </div>
