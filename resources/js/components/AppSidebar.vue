@@ -11,7 +11,15 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@inertiajs/vue3";
-import { LayoutGrid, User, Users, Shirt, ShoppingCart } from "lucide-vue-next";
+import {
+    LayoutGrid,
+    User,
+    Users,
+    Shirt,
+    ShoppingCart,
+    CircleArrowDown,
+    CircleArrowOutUpRight,
+} from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
 const mainNavItems = [
@@ -62,6 +70,13 @@ const mainNavItems = [
                 href: route("order.index"),
                 routeMatch: "order.*",
                 permission: "order.view",
+            },
+            {
+                icon: CircleArrowOutUpRight,
+                title: "Pengeluaran",
+                href: route("expense.index"),
+                routeMatch: "expense.*",
+                permission: "expense.view",
             },
         ],
     },

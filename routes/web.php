@@ -58,6 +58,17 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/{id}/print', 'print')->name('order.print');
         });
     });
+
+    Route::prefix('expense')->group(function () {
+        Route::controller(App\Http\Controllers\ExpenseController::class)->group(function () {
+            Route::get('/', 'index')->name('expense.index')->middleware('can:expense.view');
+            Route::get('/create', 'create')->name('expense.create')->middleware('can:expense.create');
+            Route::post('/', 'store')->name('expense.store')->middleware('can:expense.create');
+            Route::get('/{id}/edit', 'edit')->name('expense.edit')->middleware('can:expense.update');
+            Route::put('/{id}/update', 'update')->name('expense.update')->middleware('can:expense.update');
+            Route::delete('/{id}/destroy', 'destroy')->name('expense.destroy')->middleware('can:expense.delete');
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';
