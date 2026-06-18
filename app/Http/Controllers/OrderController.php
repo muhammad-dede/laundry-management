@@ -11,6 +11,7 @@ use App\Http\Requests\Order\UpdateRequest;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Service;
+use App\Services\FonnteService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,9 @@ use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        protected FonnteService $fonnte
+    ) {}
     /**
      * Display a listing of the resource.
      */
@@ -157,6 +161,24 @@ class OrderController extends Controller
 
             return $order;
         });
+
+        // Send Whatsapp
+        $order->load('customer');
+        $message = implode("\n", [
+            "Halo {$order->customer->name}",
+            "",
+            "Pesanan laundry Anda berhasil dibuat.",
+            "",
+            "Invoice : {$order->invoice_number}",
+            "Total : Rp " . number_format($order->grand_total, 0, ',', '.'),
+            "Estimasi selesai : {$order->estimated_finish_date->format('d/m/Y')}",
+            "",
+            "Terima kasih.",
+        ]);
+        $this->fonnte->send(
+            $order->customer->phone,
+            $message
+        );
 
         return redirect()->route('order.show', $order->id)->with('success', 'Transaksi berhasil ditambahkan.');
     }
@@ -332,7 +354,7 @@ class OrderController extends Controller
 
     public function updateStatus(string $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('customer')->findOrFail($id);
 
         if ($order->order_status === OrderStatusEnum::COMPLETED) {
             return back()->with('error', 'Transaksi sudah selesai.');
@@ -360,6 +382,26 @@ class OrderController extends Controller
                 'created_by' => Auth::id(),
             ]);
         });
+
+        // Send Whatsapp
+        if ($newStatus === OrderStatusEnum::READY) {
+            $message = implode("\n", [
+                "Halo {$order->customer->name}",
+                "",
+                "Laundry Anda sudah selesai dan siap diambil.",
+                "",
+                "Invoice : {$order->invoice_number}",
+                "Total : Rp " . number_format($order->grand_total, 0, ',', '.'),
+                "",
+                "Silakan datang ke outlet untuk mengambil pesanan.",
+                "",
+                "Terima kasih.",
+            ]);
+            $this->fonnte->send(
+                $order->customer->phone,
+                $message
+            );
+        }
 
         return back()->with('success', 'Status berhasil diubah menjadi ' . $newStatus->label());
     }
