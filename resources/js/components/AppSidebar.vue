@@ -17,8 +17,8 @@ import {
     Users,
     Shirt,
     ShoppingCart,
-    CircleArrowDown,
-    CircleArrowOutUpRight,
+    BanknoteArrowUp,
+    BanknoteArrowDown,
 } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
@@ -72,11 +72,18 @@ const mainNavItems = [
                 permission: "order.view",
             },
             {
-                icon: CircleArrowOutUpRight,
+                icon: BanknoteArrowDown,
                 title: "Pengeluaran",
                 href: route("expense.index"),
                 routeMatch: "expense.*",
                 permission: "expense.view",
+            },
+            {
+                icon: BanknoteArrowUp,
+                title: "Pemasukan Lain",
+                href: route("income.index"),
+                routeMatch: "income.*",
+                permission: "income.view",
             },
         ],
     },

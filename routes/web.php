@@ -69,6 +69,17 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::delete('/{id}/destroy', 'destroy')->name('expense.destroy')->middleware('can:expense.delete');
         });
     });
+
+    Route::prefix('income')->group(function () {
+        Route::controller(App\Http\Controllers\IncomeController::class)->group(function () {
+            Route::get('/', 'index')->name('income.index')->middleware('can:income.view');
+            Route::get('/create', 'create')->name('income.create')->middleware('can:income.create');
+            Route::post('/', 'store')->name('income.store')->middleware('can:income.create');
+            Route::get('/{id}/edit', 'edit')->name('income.edit')->middleware('can:income.update');
+            Route::put('/{id}/update', 'update')->name('income.update')->middleware('can:income.update');
+            Route::delete('/{id}/destroy', 'destroy')->name('income.destroy')->middleware('can:income.delete');
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';
