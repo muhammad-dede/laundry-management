@@ -94,6 +94,12 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
                 Route::get('/export', 'export')->name('report.expense.export')->middleware('can:report.expense.export');
             });
         });
+        Route::prefix('income')->group(function () {
+            Route::controller(App\Http\Controllers\ReportIncomeController::class)->group(function () {
+                Route::get('/', 'index')->name('report.income.index')->middleware('can:report.income.view');
+                Route::get('/export', 'export')->name('report.income.export')->middleware('can:report.income.export');
+            });
+        });
     });
 });
 

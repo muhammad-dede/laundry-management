@@ -35,17 +35,25 @@ class PermissionSeeder extends Seeder
             'order.update',
             'order.delete',
             'order.detail',
-            'order.cancel',
-            // Order Status
-            'order-status.view',
-            'order-status.update',
-            'order-status.history',
-            // Payment
-            'payment.view',
-            'payment.create',
-            'payment.update',
-            'payment.delete',
-            'payment.refund',
+            // Pengeluaran
+            'expense.view',
+            'expense.create',
+            'expense.update',
+            'expense.delete',
+            // Pemasukan Non Pesanan
+            'income.view',
+            'income.create',
+            'income.update',
+            'income.delete',
+            // Laporan Pesanan
+            'report.order.view',
+            'report.order.export',
+            // Laporan Pengeluaran
+            'report.expense.view',
+            'report.expense.export',
+            // Laporan Keuangan
+            'report.income.view',
+            'report.income.export',
             // Antar Jemput (Pickup)
             'pickup.view',
             'pickup.create',
@@ -61,32 +69,6 @@ class PermissionSeeder extends Seeder
             // Tugas Kurir
             'courier-task.view',
             'courier-task.update-status',
-            // Pengeluaran
-            'expense.view',
-            'expense.create',
-            'expense.update',
-            'expense.delete',
-            // Pemasukan Non Pesanan
-            'income.view',
-            'income.create',
-            'income.update',
-            'income.delete',
-            // Notifikasi WhatsApp
-            'notification.view',
-            'notification.send',
-            'notification.resend',
-            // Laporan Pesanan
-            'report.order.view',
-            'report.order.export',
-            // Laporan Pembayaran
-            'report.payment.view',
-            'report.payment.export',
-            // Laporan Pengeluaran
-            'report.expense.view',
-            'report.expense.export',
-            // Laporan Keuangan
-            'report.finance.view',
-            'report.finance.export',
         ];
 
         foreach ($permissions as $permission) {

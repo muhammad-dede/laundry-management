@@ -39,17 +39,22 @@ class RoleSeeder extends Seeder
                     'order.update',
                     'order.delete',
                     'order.detail',
-                    'order.cancel',
-                    // Order Status
-                    'order-status.view',
-                    'order-status.update',
-                    'order-status.history',
-                    // Payment
-                    'payment.view',
-                    'payment.create',
-                    'payment.update',
-                    'payment.delete',
-                    'payment.refund',
+                    // Pengeluaran
+                    'expense.view',
+                    'expense.create',
+                    'expense.update',
+                    'expense.delete',
+                    // Pemasukan Non Pesanan
+                    'income.view',
+                    'income.create',
+                    'income.update',
+                    'income.delete',
+                    // Laporan Pesanan
+                    'report.order.view',
+                    // Laporan Pengeluaran
+                    'report.expense.view',
+                    // Laporan Keuangan
+                    'report.income.view',
                     // Antar Jemput (Pickup)
                     'pickup.view',
                     'pickup.create',
@@ -62,28 +67,6 @@ class RoleSeeder extends Seeder
                     'delivery.update',
                     'delivery.delete',
                     'delivery.assign-courier',
-                    // Pengeluaran
-                    'expense.view',
-                    'expense.create',
-                    'expense.update',
-                    'expense.delete',
-                    // Pemasukan Non Pesanan
-                    'income.view',
-                    'income.create',
-                    'income.update',
-                    'income.delete',
-                    // Notifikasi WhatsApp
-                    'notification.view',
-                    'notification.send',
-                    'notification.resend',
-                    // Laporan Pesanan
-                    'report.transaction.view',
-                    // Laporan Pembayaran
-                    'report.payment.view',
-                    // Laporan Pengeluaran
-                    'report.expense.view',
-                    // Laporan Keuangan
-                    'report.finance.view',
                 ],
             ],
             [
@@ -95,19 +78,16 @@ class RoleSeeder extends Seeder
                     'service.view',
                     'order.view',
                     'order.detail',
-                    'payment.view',
                     'expense.view',
                     'income.view',
-                    'pickup.view',
-                    'delivery.view',
-                    'report.transaction.view',
-                    'report.transaction.export',
-                    'report.payment.view',
-                    'report.payment.export',
+                    'report.order.view',
+                    'report.order.export',
                     'report.expense.view',
                     'report.expense.export',
-                    'report.finance.view',
-                    'report.finance.export',
+                    'report.income.view',
+                    'report.income.export',
+                    'pickup.view',
+                    'delivery.view',
                 ],
             ],
             [
