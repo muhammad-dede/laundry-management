@@ -19,6 +19,7 @@ import {
     ShoppingCart,
     BanknoteArrowUp,
     BanknoteArrowDown,
+    ChartColumn,
 } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
@@ -84,6 +85,18 @@ const mainNavItems = [
                 href: route("income.index"),
                 routeMatch: "income.*",
                 permission: "income.view",
+            },
+        ],
+    },
+    {
+        title: "Laporan",
+        items: [
+            {
+                icon: ChartColumn,
+                title: "Laporan Pesanan",
+                href: route("report.order.index"),
+                routeMatch: "report.order.*",
+                permission: "report.order.view",
             },
         ],
     },

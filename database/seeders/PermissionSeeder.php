@@ -76,8 +76,8 @@ class PermissionSeeder extends Seeder
             'notification.send',
             'notification.resend',
             // Laporan Pesanan
-            'report.transaction.view',
-            'report.transaction.export',
+            'report.order.view',
+            'report.order.export',
             // Laporan Pembayaran
             'report.payment.view',
             'report.payment.export',

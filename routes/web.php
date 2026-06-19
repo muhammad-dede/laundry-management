@@ -80,6 +80,15 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::delete('/{id}/destroy', 'destroy')->name('income.destroy')->middleware('can:income.delete');
         });
     });
+
+    Route::prefix('report')->group(function () {
+        Route::prefix('order')->group(function () {
+            Route::controller(App\Http\Controllers\ReportOrderController::class)->group(function () {
+                Route::get('/', 'index')->name('report.order.index')->middleware('can:report.order.view');
+                Route::get('/export', 'export')->name('report.order.export')->middleware('can:report.order.export');
+            });
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';
