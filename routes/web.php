@@ -88,6 +88,12 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
                 Route::get('/export', 'export')->name('report.order.export')->middleware('can:report.order.export');
             });
         });
+        Route::prefix('expense')->group(function () {
+            Route::controller(App\Http\Controllers\ReportExpenseController::class)->group(function () {
+                Route::get('/', 'index')->name('report.expense.index')->middleware('can:report.expense.view');
+                Route::get('/export', 'export')->name('report.expense.export')->middleware('can:report.expense.export');
+            });
+        });
     });
 });
 

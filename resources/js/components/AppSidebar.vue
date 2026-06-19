@@ -20,6 +20,7 @@ import {
     BanknoteArrowUp,
     BanknoteArrowDown,
     ChartColumn,
+    TrendingDown,
 } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
@@ -97,6 +98,13 @@ const mainNavItems = [
                 href: route("report.order.index"),
                 routeMatch: "report.order.*",
                 permission: "report.order.view",
+            },
+            {
+                icon: TrendingDown,
+                title: "Laporan Pengeluaran",
+                href: route("report.expense.index"),
+                routeMatch: "report.expense.*",
+                permission: "report.expense.view",
             },
         ],
     },

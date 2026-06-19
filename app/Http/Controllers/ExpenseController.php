@@ -6,6 +6,7 @@ use App\Http\Requests\Expense\StoreRequest;
 use App\Http\Requests\Expense\UpdateRequest;
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -59,6 +60,7 @@ class ExpenseController extends Controller
                 'category' => $validated['category'],
                 'description' => $validated['description'],
                 'amount' => $validated['amount'],
+                'created_by' => Auth::id(),
             ]);
         });
 

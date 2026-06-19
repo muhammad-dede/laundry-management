@@ -6,6 +6,7 @@ use App\Http\Requests\Income\StoreRequest;
 use App\Http\Requests\Income\UpdateRequest;
 use App\Models\Income;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -57,6 +58,7 @@ class IncomeController extends Controller
                 'income_date' => $validated['income_date'],
                 'description' => $validated['description'],
                 'amount' => $validated['amount'],
+                'created_by' => Auth::id(),
             ]);
         });
 
