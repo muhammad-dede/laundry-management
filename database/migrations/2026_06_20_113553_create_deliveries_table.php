@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pickup_requests', function (Blueprint $table) {
+        Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('request_number')->unique();
-            $table->unsignedBigInteger('customer_id')->index();
+            $table->unsignedBigInteger('order_id')->index();
             $table->unsignedBigInteger('courier_id')->index()->nullable();
+            $table->string('delivery_status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, DELIVERED, CANCELLED
+            $table->datetime('scheduled_at')->nullable();
+            $table->datetime('delivered_at')->nullable();
             $table->text('address');
-            $table->datetime('pickup_at')->nullable();
-            $table->string('status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, PICKED_UP, RECEIVED, CANCELLED
             $table->text('notes')->nullable();
+            $table->unsignedBigInteger('created_by')->index()->nullable();
             $table->timestamps();
 
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('courier_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pickup_requests');
+        Schema::dropIfExists('deliveries');
     }
 };

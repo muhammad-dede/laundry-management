@@ -27,12 +27,12 @@ return new class extends Migration
             $table->string('order_status')->default('QUEUED'); // , QUEUED, PROCESS, READY, COMPLETED
             $table->text('notes')->nullable();
             $table->string('delivery_type')->default('SELF'); // SELF, PICKUP, DELIVERY, PICKUP_DELIVERY
-            $table->unsignedBigInteger('pickup_request_id')->index()->nullable();
+            $table->unsignedBigInteger('pickup_id')->index()->nullable();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-            $table->foreign('pickup_request_id')->references('id')->on('pickup_requests')->onDelete('set null');
+            $table->foreign('pickup_id')->references('id')->on('pickups')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
         });
     }
