@@ -14,17 +14,70 @@ import { ShoppingBag, Wallet, Clock3, CheckCircle2 } from "lucide-vue-next";
 import useFormatter from "@/composables/useFormatter";
 import {
     Card,
+    CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import VueApexCharts from "vue3-apexcharts";
+import { computed } from "vue";
 
 const { currency } = useFormatter();
 
 const props = defineProps({
     stats: Object,
     latest_orders: Array,
+    chart: Object,
+});
+
+const chartOptions = computed(() => ({
+    chart: {
+        toolbar: {
+            show: false,
+        },
+        zoom: {
+            enabled: false,
+        },
+    },
+    stroke: {
+        curve: "smooth",
+        width: 3,
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    xaxis: {
+        categories: props.chart.categories,
+    },
+    yaxis: {
+        labels: {
+            formatter: (value) => new Intl.NumberFormat("id-ID").format(value),
+        },
+    },
+    tooltip: {
+        y: {
+            formatter: (value) =>
+                new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    maximumFractionDigits: 0,
+                }).format(value),
+        },
+    },
+}));
+
+const chartSeries = computed(() => [
+    {
+        name: "Pendapatan",
+        data: props.chart.series,
+    },
+]);
+
+document.querySelectorAll("*").forEach((el) => {
+    if (el.scrollWidth > document.documentElement.clientWidth) {
+        console.log(el);
+    }
 });
 
 const breadcrumbs = [
@@ -161,7 +214,24 @@ const breadcrumbs = [
                     </CardFooter>
                 </Card>
             </div>
-            <div class="mt-6">
+            <Card class="mt-4">
+                <CardHeader>
+                    <CardTitle>Pendapatan 7 Hari Terakhir</CardTitle>
+                    <CardDescription>
+                        Tren pendapatan laundry selama seminggu terakhir
+                    </CardDescription>
+                </CardHeader>
+
+                <CardContent>
+                    <VueApexCharts
+                        type="area"
+                        height="350"
+                        :options="chartOptions"
+                        :series="chartSeries"
+                    />
+                </CardContent>
+            </Card>
+            <div class="mt-4">
                 <h3 class="font-semibold mb-3">Pesanan Terbaru</h3>
                 <Table>
                     <TableHeader class="bg-muted/50">

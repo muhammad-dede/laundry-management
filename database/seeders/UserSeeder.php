@@ -29,6 +29,22 @@ class UserSeeder extends Seeder
                 'verified_at' => now(),
                 'role' => 'Admin',
             ],
+            [
+                'name' => 'Owner',
+                'username' => 'owner',
+                'email' => 'owner@email.com',
+                'password' => bcrypt('password'),
+                'verified_at' => now(),
+                'role' => 'Owner',
+            ],
+            [
+                'name' => 'Kurir',
+                'username' => 'courier',
+                'email' => 'courier@email.com',
+                'password' => bcrypt('password'),
+                'verified_at' => now(),
+                'role' => 'Courier',
+            ],
         ];
 
         foreach ($users as $userData) {
