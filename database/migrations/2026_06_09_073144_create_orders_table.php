@@ -19,15 +19,20 @@ return new class extends Migration
             $table->dateTime('estimated_finish_date')->nullable();
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->decimal('discount', 15, 2)->default(0);
+            $table->decimal('pickup_fee', 15, 2)->default(0);
+            $table->decimal('delivery_fee', 15, 2)->default(0);
             $table->decimal('grand_total', 15, 2)->default(0);
             $table->string('payment_type')->default('FULL_PAYMENT'); // FULL_PAYMENT, PAY_LATER
             $table->string('payment_status')->default('UNPAID'); // UNPAID, PAID
             $table->string('order_status')->default('QUEUED'); // , QUEUED, PROCESS, READY, COMPLETED
             $table->text('notes')->nullable();
+            $table->string('delivery_type')->default('SELF'); // SELF, PICKUP, DELIVERY, PICKUP_DELIVERY
+            $table->unsignedBigInteger('pickup_request_id')->index()->nullable();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('pickup_request_id')->references('id')->on('pickup_requests')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
         });
     }

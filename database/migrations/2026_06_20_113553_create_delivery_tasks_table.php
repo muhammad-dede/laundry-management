@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pickups_deliveries', function (Blueprint $table) {
+        Schema::create('delivery_tasks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('order_id')->index();
-            $table->unsignedBigInteger('courier_id')->nullable()->index();
-            $table->string('service_type')->nullable(); // PICKUP, DELIVERY
-            $table->dateTime('scheduled_at')->nullable();
-            $table->dateTime('completed_at')->nullable();
-            $table->string('status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, COMPLETED, CANCELLED
+            $table->unsignedBigInteger('courier_id')->index()->nullable();
+            $table->string('status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, DELIVERED, CANCELLED
+            $table->datetime('scheduled_at')->nullable();
+            $table->datetime('delivered_at')->nullable();
             $table->text('address');
             $table->text('notes')->nullable();
+            $table->unsignedBigInteger('created_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('courier_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pickups_deliveries');
+        Schema::dropIfExists('delivery_tasks');
     }
 };
