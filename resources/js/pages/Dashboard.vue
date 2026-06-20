@@ -21,7 +21,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import VueApexCharts from "vue3-apexcharts";
-import { computed } from "vue";
+import { computed, nextTick, onMounted } from "vue";
 
 const { currency } = useFormatter();
 
@@ -66,6 +66,14 @@ const chartOptions = computed(() => ({
         },
     },
 }));
+
+onMounted(async () => {
+    await nextTick();
+
+    setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+    }, 100);
+});
 
 const chartSeries = computed(() => [
     {
