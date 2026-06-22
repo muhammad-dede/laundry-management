@@ -69,13 +69,6 @@ const mainNavItems = [
         title: "Transaksi",
         items: [
             {
-                icon: Truck,
-                title: "Pengambilan",
-                href: route("pickup.index"),
-                routeMatch: "pickup.*",
-                permission: "pickup.view",
-            },
-            {
                 icon: ShoppingCart,
                 title: "Pesanan",
                 href: route("order.index"),
@@ -95,18 +88,6 @@ const mainNavItems = [
                 href: route("income.index"),
                 routeMatch: "income.*",
                 permission: "income.view",
-            },
-        ],
-    },
-    {
-        title: "Kurir",
-        items: [
-            {
-                icon: Truck,
-                title: "Pengambilan Laundry",
-                href: route("pickup-task.index"),
-                routeMatch: "pickup-task.*",
-                permission: "courier-task.view",
             },
         ],
     },

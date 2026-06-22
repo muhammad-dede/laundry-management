@@ -62,14 +62,4 @@ class Order extends Model
     {
         return $this->hasOne(Payment::class);
     }
-
-    public function pickup()
-    {
-        return $this->hasone(Pickup::class);
-    }
-
-    public function delivery()
-    {
-        return $this->hasOne(Delivery::class);
-    }
 }

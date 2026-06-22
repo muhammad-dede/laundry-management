@@ -42,20 +42,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         });
     });
 
-    Route::prefix('pickup')->group(function () {
-        Route::controller(App\Http\Controllers\PickupController::class)->group(function () {
-            Route::get('/', 'index')->name('pickup.index')->middleware('can:pickup.view');
-            Route::get('/create', 'create')->name('pickup.create')->middleware('can:pickup.create');
-            Route::post('/', 'store')->name('pickup.store')->middleware('can:pickup.create');
-            Route::get('/{id}', 'show')->name('pickup.show')->middleware('can:pickup.view');
-            Route::get('/{id}/edit', 'edit')->name('pickup.edit')->middleware('can:pickup.update');
-            Route::put('/{id}/update', 'update')->name('pickup.update')->middleware('can:pickup.update');
-            Route::delete('/{id}/destroy', 'destroy')->name('pickup.destroy')->middleware('can:pickup.delete');
-            // External
-            Route::get('/search/customer', 'searchCustomer')->name('pickup.searchCustomer');
-        });
-    });
-
     Route::prefix('order')->group(function () {
         Route::controller(App\Http\Controllers\OrderController::class)->group(function () {
             Route::get('/', 'index')->name('order.index')->middleware('can:order.view');
@@ -92,14 +78,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/{id}/edit', 'edit')->name('income.edit')->middleware('can:income.update');
             Route::put('/{id}/update', 'update')->name('income.update')->middleware('can:income.update');
             Route::delete('/{id}/destroy', 'destroy')->name('income.destroy')->middleware('can:income.delete');
-        });
-    });
-
-    Route::prefix('pickup-task')->group(function () {
-        Route::controller(App\Http\Controllers\PickupTaskController::class)->group(function () {
-            Route::get('/', 'index')->name('pickup-task.index')->middleware('can:courier-task.view');
-            Route::get('/{id}', 'show')->name('pickup-task.show')->middleware('can:courier-task.update-status');
-            Route::put('/{id}/update-status', 'updateStatus')->name('pickup-task.update-status')->middleware('can:courier-task.update-status');
         });
     });
 
