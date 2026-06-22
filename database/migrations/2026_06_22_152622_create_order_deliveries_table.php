@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('order_deliveries', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('order_id')->index();
+            $table->unsignedBigInteger('customer_id')->index()->nullable();
             $table->unsignedBigInteger('courier_id')->index()->nullable();
             $table->dateTime('scheduled_at')->nullable();
             $table->dateTime('delivered_at')->nullable();
+            $table->string('delivery_status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, DELIVERED
             $table->text('notes')->nullable();
-            $table->string('delivery_status')->default('ASSIGNED'); // ASSIGNED, ON_THE_WAY, DELIVERED
             $table->timestamps();
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
             $table->foreign('courier_id')->references('id')->on('users')->onDelete('set null');
         });
     }

@@ -27,6 +27,11 @@ class OrderPickup extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
     public function courier()
     {
         return $this->belongsTo(User::class, 'courier_id');
