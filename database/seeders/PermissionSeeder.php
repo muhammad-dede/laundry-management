@@ -54,17 +54,6 @@ class PermissionSeeder extends Seeder
             // Laporan Keuangan
             'report.income.view',
             'report.income.export',
-            // Antar Jemput (Pickup)
-            'pickup.view',
-            'pickup.create',
-            'pickup.update',
-            'pickup.delete',
-            // Antar Jemput (Delivery)
-            'delivery.view',
-            'delivery.create',
-            'delivery.update',
-            'delivery.delete',
-            'delivery.assign-courier',
             // Tugas Kurir
             'courier-task.view',
             'courier-task.update-status',

@@ -55,17 +55,6 @@ class RoleSeeder extends Seeder
                     'report.expense.view',
                     // Laporan Keuangan
                     'report.income.view',
-                    // Antar Jemput (Pickup)
-                    'pickup.view',
-                    'pickup.create',
-                    'pickup.update',
-                    'pickup.delete',
-                    // Antar Jemput (Delivery)
-                    'delivery.view',
-                    'delivery.create',
-                    'delivery.update',
-                    'delivery.delete',
-                    'delivery.assign-courier',
                 ],
             ],
             [
@@ -85,8 +74,6 @@ class RoleSeeder extends Seeder
                     'report.expense.export',
                     'report.income.view',
                     'report.income.export',
-                    'pickup.view',
-                    'delivery.view',
                 ],
             ],
             [
@@ -96,8 +83,6 @@ class RoleSeeder extends Seeder
                     'dashboard.view',
                     'courier-task.view',
                     'courier-task.update-status',
-                    'pickup.view',
-                    'delivery.view',
                 ],
             ],
         ];
