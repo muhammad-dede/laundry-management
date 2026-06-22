@@ -21,7 +21,10 @@ const props = defineProps({
 });
 
 const canCreateOrder = computed(() => {
-    return ["RECEIVED"].includes(props.pickup?.pickup_status);
+    return (
+        ["RECEIVED"].includes(props.pickup?.pickup_status) &&
+        !props.pickup?.order_id
+    );
 });
 
 const breadcrumbs = [

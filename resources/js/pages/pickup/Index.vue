@@ -83,7 +83,7 @@ const destroy = () => {
 };
 
 const canCreateOrder = (item) => {
-    return ["RECEIVED"].includes(item.pickup_status);
+    return ["RECEIVED"].includes(item.pickup_status) && !item.order_id;
 };
 
 const canEdit = (item) => {
