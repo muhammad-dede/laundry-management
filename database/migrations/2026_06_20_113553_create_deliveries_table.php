@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id')->index();
             $table->unsignedBigInteger('courier_id')->index()->nullable();
-            $table->string('delivery_status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, DELIVERED, CANCELLED
+            $table->string('delivery_status')->default('PENDING'); // PENDING, ASSIGNED, ON_THE_WAY, DELIVERED
             $table->datetime('scheduled_at')->nullable();
             $table->datetime('delivered_at')->nullable();
             $table->text('address');

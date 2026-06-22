@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('courier_id')->index()->nullable();
             $table->text('address');
             $table->datetime('pickup_at')->nullable();
-            $table->string('pickup_status')->default('ASSIGNED'); // ASSIGNED, ON_THE_WAY, PICKED_UP, RECEIVED, CANCELLED
+            $table->string('pickup_status')->default('ASSIGNED'); // ASSIGNED, ON_THE_WAY, PICKED_UP, RECEIVED
             $table->text('notes')->nullable();
             $table->timestamps();
 

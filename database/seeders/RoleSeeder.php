@@ -60,7 +60,6 @@ class RoleSeeder extends Seeder
                     'pickup.create',
                     'pickup.update',
                     'pickup.delete',
-                    'pickup.assign-courier',
                     // Antar Jemput (Delivery)
                     'delivery.view',
                     'delivery.create',

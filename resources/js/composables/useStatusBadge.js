@@ -54,7 +54,7 @@ export default function useStatusBadge() {
                 class: "bg-blue-500 text-white hover:bg-blue-500",
             },
             ON_THE_WAY: {
-                label: "Kurir Menuju Lokasi",
+                label: "Dalam Perjalanan",
                 class: "bg-purple-500 text-white hover:bg-purple-500",
             },
             PICKED_UP: {
@@ -62,12 +62,8 @@ export default function useStatusBadge() {
                 class: "bg-indigo-500 text-white hover:bg-indigo-500",
             },
             RECEIVED: {
-                label: "Cucian Diterima Laundry",
+                label: "Cucian Diterima",
                 class: "bg-emerald-500 text-white hover:bg-emerald-500",
-            },
-            CANCELLED: {
-                label: "Dibatalkan",
-                class: "bg-red-500 text-white hover:bg-red-500",
             },
         };
 
