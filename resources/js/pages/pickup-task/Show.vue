@@ -93,7 +93,7 @@ const updateStatus = () => {
 };
 
 const breadcrumbs = [
-    { title: "Pengambilan Saya", href: route("pickup-task.index") },
+    { title: "Pengambilan Laundry", href: route("pickup-task.index") },
     {
         title: "Detail Pengambilan Sata",
         href: route("pickup-task.show", props.pickup?.id),
@@ -102,14 +102,14 @@ const breadcrumbs = [
 </script>
 
 <template>
-    <Head title="Detail Pengambilan Saya" />
+    <Head title="Detail Pengambilan Laundry" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <AppMain>
             <div
                 class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"
             >
                 <h2 class="text-lg md:text-xl font-bold">
-                    Detail Pengambilan Saya
+                    Detail Pengambilan Laundry
                 </h2>
             </div>
             <!-- Informasi Pengambilan Laundry -->

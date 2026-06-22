@@ -17,6 +17,7 @@ import Pagination from "@/components/Pagination.vue";
 import ButtonCreate from "@/components/ButtonCreate.vue";
 import ButtonEdit from "@/components/ButtonEdit.vue";
 import ButtonDelete from "@/components/ButtonDelete.vue";
+import ButtonShow from "@/components/ButtonShow.vue";
 import usePermissions from "@/composables/usePermissions";
 import useFormatter from "@/composables/useFormatter";
 import useStatusBadge from "@/composables/useStatusBadge";
@@ -31,6 +32,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import ButtonPlus from "@/components/ButtonPlus.vue";
 
 const { can } = usePermissions();
 const { date, time } = useFormatter();
@@ -78,6 +80,10 @@ const destroy = () => {
             closeDeleteModal();
         },
     });
+};
+
+const canCreateOrder = (item) => {
+    return ["RECEIVED"].includes(item.pickup_status);
 };
 
 const canEdit = (item) => {
@@ -157,6 +163,17 @@ const breadcrumbs = [{ title: "Pengambilan", href: route("pickup.index") }];
                             </Badge>
                         </TableCell>
                         <TableCell class="text-right space-x-2">
+                            <ButtonPlus
+                                v-if="canCreateOrder"
+                                title="Buat Pesanan"
+                                :href="
+                                    route('order.create', { pickup: item.id })
+                                "
+                            />
+                            <ButtonShow
+                                v-if="can('pickup.view')"
+                                :href="route('pickup.show', item.id)"
+                            />
                             <ButtonEdit
                                 v-if="can('pickup.update') && canEdit(item)"
                                 :href="route('pickup.edit', item.id)"

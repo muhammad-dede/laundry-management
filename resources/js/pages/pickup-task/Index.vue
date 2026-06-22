@@ -49,18 +49,20 @@ function updateData() {
 }
 
 const breadcrumbs = [
-    { title: "Pengambilan Saya", href: route("pickup-task.index") },
+    { title: "Pengambilan Laundry", href: route("pickup-task.index") },
 ];
 </script>
 
 <template>
-    <Head title="Pengambilan Saya" />
+    <Head title="Pengambilan Laundry" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <AppMain>
             <div
                 class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"
             >
-                <h2 class="text-lg md:text-xl font-bold">Pengambilan Saya</h2>
+                <h2 class="text-lg md:text-xl font-bold">
+                    Pengambilan Laundry
+                </h2>
                 <div class="flex items-center gap-2">
                     <SearchBox v-model="search" />
                 </div>

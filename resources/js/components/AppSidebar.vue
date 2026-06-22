@@ -103,7 +103,7 @@ const mainNavItems = [
         items: [
             {
                 icon: Truck,
-                title: "Pengambilan Saya",
+                title: "Pengambilan Laundry",
                 href: route("pickup-task.index"),
                 routeMatch: "pickup-task.*",
                 permission: "courier-task.view",

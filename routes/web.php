@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/', 'index')->name('pickup.index')->middleware('can:pickup.view');
             Route::get('/create', 'create')->name('pickup.create')->middleware('can:pickup.create');
             Route::post('/', 'store')->name('pickup.store')->middleware('can:pickup.create');
+            Route::get('/{id}', 'show')->name('pickup.show')->middleware('can:pickup.view');
             Route::get('/{id}/edit', 'edit')->name('pickup.edit')->middleware('can:pickup.update');
             Route::put('/{id}/update', 'update')->name('pickup.update')->middleware('can:pickup.update');
             Route::delete('/{id}/destroy', 'destroy')->name('pickup.destroy')->middleware('can:pickup.delete');

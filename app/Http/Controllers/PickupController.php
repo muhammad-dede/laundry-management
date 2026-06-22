@@ -102,7 +102,10 @@ class PickupController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $pickup = Pickup::query()->with(['order', 'courier', 'customer'])->findOrFail($id);
+        return Inertia::render('pickup/Show', [
+            'pickup' => $pickup,
+        ]);
     }
 
     /**
