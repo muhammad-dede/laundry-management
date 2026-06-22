@@ -22,6 +22,7 @@ import {
     ChartColumn,
     TrendingDown,
     TrendingUp,
+    Truck,
 } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
@@ -67,6 +68,13 @@ const mainNavItems = [
     {
         title: "Transaksi",
         items: [
+            {
+                icon: Truck,
+                title: "Pengambilan",
+                href: route("pickup.index"),
+                routeMatch: "pickup.*",
+                permission: "pickup.view",
+            },
             {
                 icon: ShoppingCart,
                 title: "Pesanan",

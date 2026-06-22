@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum PickupStatusEnum: string
 {
-    case PENDING = 'PENDING';
     case ASSIGNED = 'ASSIGNED';
     case ON_THE_WAY = 'ON_THE_WAY';
     case PICKED_UP = 'PICKED_UP';
@@ -14,7 +13,6 @@ enum PickupStatusEnum: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => 'Menunggu Penugasan',
             self::ASSIGNED => 'Kurir Ditugaskan',
             self::ON_THE_WAY => 'Dalam Perjalanan',
             self::PICKED_UP => 'Cucian Sudah Dijemput',

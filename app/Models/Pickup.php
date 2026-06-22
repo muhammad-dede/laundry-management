@@ -27,6 +27,11 @@ class Pickup extends Model
         return $this->hasOne(Order::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
     public function courier()
     {
         return $this->belongsTo(User::class, 'courier_id');

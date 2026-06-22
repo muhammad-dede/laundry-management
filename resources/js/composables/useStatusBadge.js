@@ -47,8 +47,41 @@ export default function useStatusBadge() {
         );
     };
 
+    const pickupStatusBadge = (status) => {
+        const statuses = {
+            ASSIGNED: {
+                label: "Kurir Ditugaskan",
+                class: "bg-blue-500 text-white hover:bg-blue-500",
+            },
+            ON_THE_WAY: {
+                label: "Kurir Menuju Lokasi",
+                class: "bg-purple-500 text-white hover:bg-purple-500",
+            },
+            PICKED_UP: {
+                label: "Cucian Sedang Dibawa",
+                class: "bg-indigo-500 text-white hover:bg-indigo-500",
+            },
+            RECEIVED: {
+                label: "Cucian Diterima Laundry",
+                class: "bg-emerald-500 text-white hover:bg-emerald-500",
+            },
+            CANCELLED: {
+                label: "Dibatalkan",
+                class: "bg-red-500 text-white hover:bg-red-500",
+            },
+        };
+
+        return (
+            statuses[status] ?? {
+                label: status,
+                class: "",
+            }
+        );
+    };
+
     return {
         orderStatusBadge,
         paymentStatusBadge,
+        pickupStatusBadge,
     };
 }
