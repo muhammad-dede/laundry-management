@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\PaymentTypeEnum;
+use App\Enums\PickupDeliveryTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
@@ -15,12 +16,14 @@ class Order extends Model
         'payment_type' => PaymentTypeEnum::class,
         'payment_status' => PaymentStatusEnum::class,
         'order_status' => OrderStatusEnum::class,
+        'pickup_delivery_type' => PickupDeliveryTypeEnum::class,
     ];
 
     protected $appends = [
         'payment_type_label',
         'payment_status_label',
         'order_status_label',
+        'pickup_delivery_type_label',
     ];
 
     public function getPaymentTypeLabelAttribute(): ?string
@@ -36,6 +39,11 @@ class Order extends Model
     public function getOrderStatusLabelAttribute(): ?string
     {
         return $this->order_status?->label();
+    }
+
+    public function getPickupDeliveryTypeLabelAttribute(): ?string
+    {
+        return $this->pickup_delivery_type?->label();
     }
 
     public function customer()
