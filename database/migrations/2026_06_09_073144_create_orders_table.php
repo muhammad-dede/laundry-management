@@ -24,9 +24,8 @@ return new class extends Migration
             $table->decimal('grand_total', 15, 2)->default(0);
             $table->string('payment_type')->default('FULL_PAYMENT'); // FULL_PAYMENT, PAY_LATER
             $table->string('payment_status')->default('UNPAID'); // UNPAID, PAID
-            $table->string('order_status')->default('QUEUED'); // WAITING_PICKUP, QUEUED, PROCESS, READY, ON_DELIVERY, COMPLETED
+            $table->string('order_status')->default('QUEUED'); // QUEUED, PROCESS, READY, COMPLETED
             $table->text('notes')->nullable();
-            $table->string('pickup_delivery_type')->default('SELF'); // SELF, PICKUP, DELIVERY, PICKUP_DELIVERY
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->timestamps();
 
