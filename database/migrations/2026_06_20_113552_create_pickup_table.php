@@ -13,16 +13,13 @@ return new class extends Migration
     {
         Schema::create('pickups', function (Blueprint $table) {
             $table->id();
-            $table->string('pickup_number')->unique();
-            $table->unsignedBigInteger('customer_id')->index();
+            $table->unsignedBigInteger('order_id')->index();
             $table->unsignedBigInteger('courier_id')->index()->nullable();
-            $table->text('address');
-            $table->datetime('pickup_at')->nullable();
             $table->string('pickup_status')->default('ASSIGNED'); // ASSIGNED, ON_THE_WAY, PICKED_UP, RECEIVED
-            $table->text('notes')->nullable();
+            $table->datetime('pickup_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('courier_id')->references('id')->on('users')->onDelete('set null');
         });
     }

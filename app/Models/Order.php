@@ -43,11 +43,6 @@ class Order extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function pickup()
-    {
-        return $this->belongsTo(Pickup::class);
-    }
-
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -66,6 +61,11 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function pickup()
+    {
+        return $this->hasone(Pickup::class);
     }
 
     public function delivery()
