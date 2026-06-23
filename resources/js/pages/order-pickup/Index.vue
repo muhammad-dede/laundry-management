@@ -32,6 +32,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import ButtonPlus from "@/components/ButtonPlus.vue";
 
 const { can } = usePermissions();
 const { date, time } = useFormatter();
@@ -79,6 +80,10 @@ const destroy = () => {
             closeDeleteModal();
         },
     });
+};
+
+const canCreateOrder = (item) => {
+    return ["RECEIVED"].includes(item.pickup_status) && !item.order_id;
 };
 
 const canEdit = (item) => {
@@ -161,6 +166,13 @@ const breadcrumbs = [
                             </Badge>
                         </TableCell>
                         <TableCell class="text-right space-x-2">
+                            <ButtonPlus
+                                v-if="canCreateOrder"
+                                title="Buat Pesanan"
+                                :href="
+                                    route('order.create-from-pickup', item.id)
+                                "
+                            />
                             <ButtonShow
                                 v-if="can('order.detail')"
                                 :href="route('order-pickup.show', item.id)"

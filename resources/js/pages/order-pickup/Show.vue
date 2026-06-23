@@ -1,51 +1,30 @@
 <script setup>
-import { Head, router, useForm } from "@inertiajs/vue3";
-import { computed, ref } from "vue";
+import { Head } from "@inertiajs/vue3";
+import { computed } from "vue";
 import { Field } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import AppLayout from "@/layouts/AppLayout.vue";
 import AppMain from "@/components/AppMain.vue";
 import ButtonCancel from "@/components/ButtonCancel.vue";
 import HeadingSmall from "@/components/HeadingSmall.vue";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import useFormatter from "@/composables/useFormatter";
 import { Badge } from "@/components/ui/badge";
 import useStatusBadge from "@/composables/useStatusBadge";
-import {
-    LoaderCircle,
-    MoveRight,
-    Clock3,
-    PackageCheck,
-    CircleCheckBig,
-} from "lucide-vue-next";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import ButtonCreate from "@/components/ButtonCreate.vue";
 
-const { currency, date, time } = useFormatter();
-const { orderStatusBadge, paymentStatusBadge, pickupStatusBadge } =
-    useStatusBadge();
+const { date, time } = useFormatter();
+const { pickupStatusBadge } = useStatusBadge();
 
 const props = defineProps({
     orderPickup: Object,
+});
+
+const canCreateOrder = computed(() => {
+    return (
+        ["RECEIVED"].includes(props.orderPickup?.pickup_status) &&
+        !props.orderPickup?.order_id
+    );
 });
 
 const breadcrumbs = [
@@ -144,6 +123,13 @@ const breadcrumbs = [
                 <ButtonCancel
                     title="Kembali"
                     :href="route('order-pickup.index')"
+                />
+                <ButtonCreate
+                    v-if="canCreateOrder"
+                    title="Buat Pesanan"
+                    :href="
+                        route('order.create-from-pickup', props.orderPickup?.id)
+                    "
                 />
             </Field>
         </AppMain>
