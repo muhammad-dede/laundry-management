@@ -42,6 +42,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         });
     });
 
+    Route::prefix('order-pickup')->group(function () {
+        Route::controller(App\Http\Controllers\OrderPickupController::class)->group(function () {
+            Route::get('/', 'index')->name('order-pickup.index')->middleware('can:order.view');
+            Route::get('/create', 'create')->name('order-pickup.create')->middleware('can:order.create');
+            Route::post('/', 'store')->name('order-pickup.store')->middleware('can:order.create');
+            Route::get('/{id}', 'show')->name('order-pickup.show')->middleware('can:order.detail');
+            Route::get('/{id}/edit', 'edit')->name('order-pickup.edit')->middleware('can:order.update');
+            Route::put('/{id}/update', 'update')->name('order-pickup.update')->middleware('can:order.update');
+            Route::delete('/{id}/destroy', 'destroy')->name('order-pickup.destroy')->middleware('can:order.delete');
+            // External
+            Route::get('/search/customer', 'searchCustomer')->name('order-pickup.searchCustomer');
+        });
+    });
+
     Route::prefix('order')->group(function () {
         Route::controller(App\Http\Controllers\OrderController::class)->group(function () {
             Route::get('/', 'index')->name('order.index')->middleware('can:order.view');

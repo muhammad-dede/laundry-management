@@ -69,6 +69,13 @@ const mainNavItems = [
         title: "Transaksi",
         items: [
             {
+                icon: Truck,
+                title: "Pickup Request",
+                href: route("order-pickup.index"),
+                routeMatch: "order-pickup.*",
+                permission: "order.view",
+            },
+            {
                 icon: ShoppingCart,
                 title: "Pesanan",
                 href: route("order.index"),

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Pickup;
+namespace App\Http\Requests\OrderPickup;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,7 +27,7 @@ class UpdateRequest extends FormRequest
             'customer_phone' => ['required', 'string', 'max:20'],
             'customer_address' => ['required', 'string', 'max:500'],
             'courier_id' => ['required', 'exists:users,id'],
-            'pickup_at' => ['required', 'date', 'after_or_equal:today'],
+            'scheduled_at' => ['required', 'date', 'after_or_equal:today'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -44,7 +44,7 @@ class UpdateRequest extends FormRequest
             'customer_phone' => 'No. Telepon',
             'customer_address' => 'Alamat',
             'courier_id' => 'Kurir',
-            'pickup_at' => 'Jadwal Penjemputan',
+            'scheduled_at' => 'Jadwal Penjemputan',
             'notes' => 'Catatan',
         ];
     }
