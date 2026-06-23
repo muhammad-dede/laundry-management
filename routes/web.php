@@ -95,6 +95,14 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         });
     });
 
+    Route::prefix('pickup-task')->group(function () {
+        Route::controller(App\Http\Controllers\PickupTaskController::class)->group(function () {
+            Route::get('/', 'index')->name('pickup-task.index')->middleware('can:courier-task.view');
+            Route::get('/{id}', 'show')->name('pickup-task.show')->middleware('can:courier-task.view');
+            Route::put('/update-status/{id}', 'updateStatus')->name('pickup-task.update-status')->middleware('can:courier-task.update-status');
+        });
+    });
+
     Route::prefix('report')->group(function () {
         Route::prefix('order')->group(function () {
             Route::controller(App\Http\Controllers\ReportOrderController::class)->group(function () {

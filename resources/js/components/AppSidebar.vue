@@ -99,6 +99,18 @@ const mainNavItems = [
         ],
     },
     {
+        title: "Kurir",
+        items: [
+            {
+                icon: Truck,
+                title: "Pengambilan",
+                href: route("pickup-task.index"),
+                routeMatch: "pickup-task.*",
+                permission: "courier-task.view",
+            },
+        ],
+    },
+    {
         title: "Laporan",
         items: [
             {

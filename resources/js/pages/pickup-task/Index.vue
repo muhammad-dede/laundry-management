@@ -71,11 +71,10 @@ const breadcrumbs = [
                 <TableHeader class="bg-muted/50">
                     <TableRow>
                         <TableHead class="w-10">No.</TableHead>
-                        <TableHead>Pickup Number</TableHead>
                         <TableHead>Pelanggan</TableHead>
+                        <TableHead>Telepon</TableHead>
                         <TableHead>Alamat</TableHead>
-                        <TableHead>Waktu</TableHead>
-                        <TableHead>Catatan</TableHead>
+                        <TableHead>Jadwal</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead class="text-right">Action</TableHead>
                     </TableRow>
@@ -83,7 +82,7 @@ const breadcrumbs = [
                 <TableBody>
                     <TableRow v-if="props.data.data.length === 0">
                         <TableCell
-                            :colspan="8"
+                            :colspan="6"
                             class="text-center py-4 text-muted-foreground"
                         >
                             Tidak ada data
@@ -95,14 +94,15 @@ const breadcrumbs = [
                         :key="item.id"
                     >
                         <TableCell>{{ index + 1 }}</TableCell>
-                        <TableCell>{{ item.pickup_number ?? "-" }}</TableCell>
                         <TableCell>{{ item.customer?.name ?? "-" }}</TableCell>
-                        <TableCell>{{ item.address ?? "-" }}</TableCell>
+                        <TableCell>{{ item.customer?.phone ?? "-" }}</TableCell>
+                        <TableCell>{{
+                            item.customer?.address ?? "-"
+                        }}</TableCell>
                         <TableCell>
-                            {{ date(item.pickup_at) ?? "-" }} .
-                            {{ time(item.pickup_at) ?? "-" }}
+                            {{ date(item.scheduled_at) ?? "-" }} .
+                            {{ time(item.scheduled_at) ?? "-" }}
                         </TableCell>
-                        <TableCell>{{ item.notes ?? "-" }}</TableCell>
                         <TableCell>
                             <Badge
                                 :class="

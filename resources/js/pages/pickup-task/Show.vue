@@ -46,7 +46,7 @@ const statusConfig = {
         next: "ON_THE_WAY",
     },
     ON_THE_WAY: {
-        label: "Dalam Perjalanan",
+        label: "Menuju Lokasi",
         icon: LoaderCircle,
         next: "PICKED_UP",
     },
@@ -122,14 +122,6 @@ const breadcrumbs = [
                     <Separator class="my-3" />
                     <div class="grid mb-3">
                         <p class="text-sm text-muted-foreground">
-                            Pickup Number
-                        </p>
-                        <p class="font-medium">
-                            {{ props.pickup?.pickup_number ?? "-" }}
-                        </p>
-                    </div>
-                    <div class="grid mb-3">
-                        <p class="text-sm text-muted-foreground">
                             Nama Pelanggan
                         </p>
                         <p class="font-medium">
@@ -157,6 +149,15 @@ const breadcrumbs = [
                     <div class="grid mb-3">
                         <p class="text-sm text-muted-foreground">
                             Jadwal Pengambilan
+                        </p>
+                        <p class="font-medium">
+                            {{ date(props.pickup?.scheduled_at) ?? "-" }} .
+                            {{ time(props.pickup?.scheduled_at) ?? "-" }}
+                        </p>
+                    </div>
+                    <div class="grid mb-3">
+                        <p class="text-sm text-muted-foreground">
+                            Waktu Pengambilan
                         </p>
                         <p class="font-medium">
                             {{ date(props.pickup?.pickup_at) ?? "-" }} .
