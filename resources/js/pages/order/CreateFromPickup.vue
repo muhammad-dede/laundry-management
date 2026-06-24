@@ -54,7 +54,6 @@ const form = useForm({
     pickup_fee: 0,
     order_detail: [],
     delivery_required: false,
-    delivery_address: props.orderPickup?.customer?.address ?? "",
     delivery_fee: 0,
 });
 
@@ -366,20 +365,6 @@ const breadcrumbs = [
                     v-if="form.delivery_required"
                     class="grid lg:grid-cols-2 gap-3 mb-3"
                 >
-                    <Field>
-                        <FieldLabel for="delivery_address"
-                            >Alamat Pengiriman</FieldLabel
-                        >
-                        <Input
-                            id="delivery_address"
-                            placeholder="Masukkan alamat pengiriman"
-                            autocomplete="off"
-                            v-model="form.delivery_address"
-                        />
-                        <FieldError>
-                            {{ form.errors.delivery_address }}
-                        </FieldError>
-                    </Field>
                     <Field>
                         <FieldLabel for="delivery_fee"
                             >Biaya Pengiriman</FieldLabel
