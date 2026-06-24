@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id')->index();
             $table->dateTime('order_date');
             $table->dateTime('estimated_finish_date')->nullable();
+            $table->boolean('delivery_required')->default(false);
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('pickup_fee', 15, 2)->default(0);

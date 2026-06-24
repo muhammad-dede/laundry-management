@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DeliveryStatusEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\PaymentTypeEnum;
+use App\Http\Requests\Order\StoreFromPickupRequest;
 use App\Http\Requests\Order\StoreRequest;
 use App\Http\Requests\Order\UpdateRequest;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\OrderPickup;
 use App\Models\Service;
 use App\Services\FonnteService;
 use Carbon\Carbon;
@@ -188,7 +191,7 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment'])->findOrFail($id);
+        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment', 'orderPickup', 'orderDelivery'])->findOrFail($id);
         return Inertia::render('order/Show', [
             'order' => $order,
             'paymentMethodOptions' => PaymentMethodEnum::options(),
@@ -435,5 +438,114 @@ class OrderController extends Controller
         return Inertia::render('order/Print', [
             'order' => $order,
         ]);
+    }
+
+    public function createFromPickup(string $order_pickup_id)
+    {
+        $orderPickup = OrderPickup::with(['customer', 'courier'])->findOrFail($order_pickup_id);
+        $services = Service::query()->where('is_active', true)->get();
+        return Inertia::render('order/CreateFromPickup', [
+            'orderPickup' => $orderPickup,
+            'services' => $services,
+            'paymentTypeOptions' => PaymentTypeEnum::options(),
+            'paymentMethodOptions' => PaymentMethodEnum::options(),
+        ]);
+    }
+
+    public function storeFromPickup(StoreFromPickupRequest $request, string $order_pickup_id)
+    {
+        $orderPickup = OrderPickup::with(['customer', 'courier'])->findOrFail($order_pickup_id);
+
+        $validated = $request->validated();
+
+        $order =  DB::transaction(function () use ($validated, $orderPickup) {
+            $invoiceNumber = 'INV-' . time();
+            $totalAmount = 0;
+            $maxEstimatedDays = 0;
+            $details = [];
+            foreach ($validated['order_detail'] as $item) {
+                $service = Service::query()->where('is_active', true)->findOrFail($item['service_id']);
+                $price = $service->price;
+                $subtotal = $price * $item['quantity'];
+                $totalAmount += $subtotal;
+                $maxEstimatedDays = max(
+                    $maxEstimatedDays,
+                    $service->estimated_days
+                );
+                $details[] = [
+                    'service_id' => $service->id,
+                    'quantity' => $item['quantity'],
+                    'price' => $price,
+                    'subtotal' => $subtotal,
+                ];
+            }
+            $deliveryFee = $validated['delivery_required'] ? $validated['delivery_fee'] : 0;
+            $pickupFee = $validated['pickup_fee'] ?? 0;
+            $discount = $validated['discount'] ?? 0;
+            $grandTotal = max(0, $totalAmount + $pickupFee + $deliveryFee - $discount);
+            $paymentType = PaymentTypeEnum::PAY_LATER;
+            $paymentStatus = PaymentStatusEnum::UNPAID;
+            $orderDate = Carbon::now();
+            $estimatedFinishDate = $orderDate->copy()->addDays($maxEstimatedDays);
+            $orderStatus = OrderStatusEnum::QUEUED;
+            $order = Order::create([
+                'invoice_number' => $invoiceNumber,
+                'customer_id' => $orderPickup->customer_id,
+                'order_date' => $orderDate,
+                'estimated_finish_date' => $estimatedFinishDate,
+                'delivery_required' => $validated['delivery_required'],
+                'total_amount' => $totalAmount,
+                'pickup_fee' => $pickupFee,
+                'delivery_fee' => $deliveryFee,
+                'discount' => $discount,
+                'grand_total' => $grandTotal,
+                'payment_type' => $paymentType,
+                'payment_status' => $paymentStatus,
+                'order_status' => $orderStatus,
+                'notes' => $validated['notes'] ?? null,
+                'created_by' => Auth::id(),
+            ]);
+            foreach ($details as $detail) {
+                $order->orderDetails()->create($detail);
+            }
+            $order->orderStatusHistories()->create([
+                'status' => $orderStatus,
+                'notes' => 'Dalam Antrian',
+                'created_by' => Auth::id(),
+            ]);
+            $orderPickup->update([
+                'order_id' => $order->id,
+            ]);
+            if ($order->delivery_required) {
+                $order->orderDelivery()->create([
+                    'customer_id' => $order->customer_id,
+                    'courier_id' => null,
+                    'scheduled_at' => $order->estimated_finish_date,
+                    'delivery_status' => DeliveryStatusEnum::PENDING,
+                    'notes' => null,
+                ]);
+            }
+            return $order;
+        });
+
+        // Send Whatsapp
+        $order->load('customer');
+        $message = implode("\n", [
+            "Halo {$order->customer->name}",
+            "",
+            "Pesanan laundry Anda berhasil dibuat.",
+            "",
+            "Invoice : {$order->invoice_number}",
+            "Total : Rp " . number_format($order->grand_total, 0, ',', '.'),
+            "Estimasi selesai : {$order->estimated_finish_date->format('d/m/Y')}",
+            "",
+            "Terima kasih.",
+        ]);
+        $this->fonnte->send(
+            $order->customer->phone,
+            $message
+        );
+
+        return redirect()->route('order.show', $order->id)->with('success', 'Pesanan berhasil ditambahkan.');
     }
 }

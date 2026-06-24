@@ -61,8 +61,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/', 'index')->name('order.index')->middleware('can:order.view');
             Route::get('/create', 'create')->name('order.create')->middleware('can:order.create');
             Route::post('/', 'store')->name('order.store')->middleware('can:order.create');
-            Route::get('/create-from-pickup/{pickup_id}', 'createFromPickup')->name('order.create-from-pickup')->middleware('can:order.create');
-            Route::post('/store-from-pickup/{pickup_id}', 'storeFromPickup')->name('order.store-from-pickup')->middleware('can:order.create');
+            Route::get('/create-from-pickup/{order_pickup_id}', 'createFromPickup')->name('order.create-from-pickup')->middleware('can:order.create');
+            Route::post('/store-from-pickup/{order_pickup_id}', 'storeFromPickup')->name('order.store-from-pickup')->middleware('can:order.create');
             Route::get('/{id}', 'show')->name('order.show')->middleware('can:order.detail');
             Route::get('/{id}/edit', 'edit')->name('order.edit')->middleware('can:order.update');
             Route::put('/{id}/update', 'update')->name('order.update')->middleware('can:order.update');
