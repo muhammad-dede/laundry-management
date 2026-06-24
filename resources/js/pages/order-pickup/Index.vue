@@ -167,7 +167,7 @@ const breadcrumbs = [
                         </TableCell>
                         <TableCell class="text-right space-x-2">
                             <ButtonPlus
-                                v-if="canCreateOrder"
+                                v-if="canCreateOrder(item)"
                                 title="Buat Pesanan"
                                 :href="
                                     route('order.create-from-pickup', item.id)
