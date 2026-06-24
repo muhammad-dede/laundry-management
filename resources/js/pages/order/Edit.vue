@@ -38,6 +38,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import useFormatter from "@/composables/useFormatter";
 
 const { currency, date } = useFormatter();
@@ -54,7 +56,7 @@ const form = useForm({
     customer_phone: props.order?.customer?.phone ?? "",
     customer_address: props.order?.customer?.address ?? "",
     notes: props.order?.notes ?? "",
-    discount: props.order?.discount ?? 0,
+    discount: Number(props.order?.discount) ?? 0,
     payment_type: props.order?.payment_type ?? "",
     payment_method: props.order?.payment?.payment_method ?? "",
     order_detail:
@@ -67,6 +69,9 @@ const form = useForm({
             price: item.price,
             subtotal: item.subtotal,
         })) ?? [],
+    delivery_required: props.order?.delivery_required ? true : false,
+    delivery_fee: Number(props.order?.delivery_fee) ?? 0,
+    pickup_fee: Number(props.order?.pickup_fee) ?? 0,
 });
 
 const defaultOrderDetail = () => ({
@@ -172,9 +177,12 @@ const grandTotal = computed(() => {
     }, 0);
 });
 const totalAfterDiscount = computed(() => {
-    const discount = Math.min(Number(form.discount || 0), grandTotal.value);
-
-    return grandTotal.value - discount;
+    return (
+        Number(grandTotal.value) +
+        Number(form.pickup_fee || 0) +
+        Number(form.delivery_fee || 0) -
+        Number(form.discount || 0)
+    );
 });
 const estimatedDays = computed(() => {
     if (form.order_detail.length === 0) {
@@ -204,6 +212,15 @@ watch(
     (value) => {
         if (value === "PAY_LATER") {
             form.payment_method = "";
+        }
+    },
+);
+
+watch(
+    () => form.delivery_required,
+    (value) => {
+        if (!value) {
+            form.delivery_fee = 0;
         }
     },
 );
@@ -243,77 +260,103 @@ const breadcrumbs = [
                     title="Informasi Pelanggan"
                     description="Cari pelanggan yang sudah terdaftar atau buat pelanggan baru"
                 />
-                <div class="grid my-3">
-                    <div class="flex items-center gap-2">
-                        <div class="relative w-full">
-                            <SearchBox
-                                placeholder="Cari pelanggan..."
-                                v-model="searchCustomer"
-                            />
-                            <div
-                                v-if="customers.length"
-                                class="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow"
-                            >
-                                <button
-                                    v-for="customer in customers"
-                                    :key="customer.id"
-                                    type="button"
-                                    class="w-full text-left p-3 hover:bg-gray-100"
-                                    @click="selectCustomer(customer)"
+                <template v-if="!props.order?.order_pickup">
+                    <div class="grid my-3">
+                        <div class="flex items-center gap-2">
+                            <div class="relative w-full">
+                                <SearchBox
+                                    placeholder="Cari pelanggan..."
+                                    v-model="searchCustomer"
+                                />
+                                <div
+                                    v-if="customers.length"
+                                    class="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow"
                                 >
-                                    <div class="font-medium">
-                                        {{ customer.name }}
-                                    </div>
-                                    <div class="text-sm text-gray-500">
-                                        {{ customer.phone }}
-                                    </div>
-                                </button>
+                                    <button
+                                        v-for="customer in customers"
+                                        :key="customer.id"
+                                        type="button"
+                                        class="w-full text-left p-3 hover:bg-gray-100"
+                                        @click="selectCustomer(customer)"
+                                    >
+                                        <div class="font-medium">
+                                            {{ customer.name }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ customer.phone }}
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="grid lg:grid-cols-2 gap-3 mb-3">
-                    <Field>
-                        <FieldLabel for="customer_name">Nama</FieldLabel>
-                        <Input
-                            id="customer_name"
-                            placeholder="Masukkan nama"
-                            autocomplete="off"
-                            v-model="form.customer_name"
-                        />
-                        <FieldError>
-                            {{ form.errors.customer_name }}
-                        </FieldError>
-                    </Field>
-                    <Field>
-                        <FieldLabel for="customer_phone"
-                            >No. Telepon</FieldLabel
-                        >
-                        <Input
-                            id="customer_phone"
-                            placeholder="Masukkan no. telepon"
-                            autocomplete="off"
-                            v-model="form.customer_phone"
-                        />
-                        <FieldError>
-                            {{ form.errors.customer_phone }}
-                        </FieldError>
-                    </Field>
-                </div>
-                <div class="grid mb-3">
-                    <Field>
-                        <FieldLabel for="customer_address">Alamat</FieldLabel>
-                        <Input
-                            id="customer_address"
-                            placeholder="Masukkan alamat"
-                            autocomplete="off"
-                            v-model="form.customer_address"
-                        />
-                        <FieldError>
-                            {{ form.errors.customer_address }}
-                        </FieldError>
-                    </Field>
-                </div>
+                    <div class="grid lg:grid-cols-2 gap-3 mb-3">
+                        <Field>
+                            <FieldLabel for="customer_name">Nama</FieldLabel>
+                            <Input
+                                id="customer_name"
+                                placeholder="Masukkan nama"
+                                autocomplete="off"
+                                v-model="form.customer_name"
+                            />
+                            <FieldError>
+                                {{ form.errors.customer_name }}
+                            </FieldError>
+                        </Field>
+                        <Field>
+                            <FieldLabel for="customer_phone"
+                                >No. Telepon</FieldLabel
+                            >
+                            <Input
+                                id="customer_phone"
+                                placeholder="Masukkan no. telepon"
+                                autocomplete="off"
+                                v-model="form.customer_phone"
+                            />
+                            <FieldError>
+                                {{ form.errors.customer_phone }}
+                            </FieldError>
+                        </Field>
+                    </div>
+                    <div class="grid mb-3">
+                        <Field>
+                            <FieldLabel for="customer_address"
+                                >Alamat</FieldLabel
+                            >
+                            <Input
+                                id="customer_address"
+                                placeholder="Masukkan alamat"
+                                autocomplete="off"
+                                v-model="form.customer_address"
+                            />
+                            <FieldError>
+                                {{ form.errors.customer_address }}
+                            </FieldError>
+                        </Field>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="space-y-3 my-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-semibold"> Nama Pelanggan </span>
+                            <span class="font-bold">
+                                {{ form.customer_name ?? "-" }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="font-semibold"> No. Telepon </span>
+                            <span class="font-medium">
+                                {{ form.customer_phone ?? "-" }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="font-semibold">Alamat</span>
+                            <span class="font-medium">
+                                {{ form.customer_address ?? "-" }}
+                            </span>
+                        </div>
+                    </div>
+                </template>
                 <!-- Layanan -->
                 <Separator class="my-3" />
                 <HeadingSmall
@@ -400,7 +443,7 @@ const breadcrumbs = [
                         </TableRow>
                     </TableBody>
                 </Table>
-                <div class="grid lg:grid-cols-2 gap-3 mt-3">
+                <div class="grid lg:grid-cols-2 gap-3 my-3">
                     <Field>
                         <FieldLabel for="discount">Diskon (Rupiah)</FieldLabel>
                         <Input
@@ -414,6 +457,23 @@ const breadcrumbs = [
                             {{ form.errors.discount }}
                         </FieldError>
                     </Field>
+                    <Field v-if="props.order?.order_pickup">
+                        <FieldLabel for="pickup_fee">
+                            Biaya Pengambilan
+                        </FieldLabel>
+                        <Input
+                            id="pickup_fee"
+                            placeholder="Masukkan biaya pengambilan"
+                            autocomplete="off"
+                            v-model="form.pickup_fee"
+                            type="number"
+                        />
+                        <FieldError>
+                            {{ form.errors.pickup_fee }}
+                        </FieldError>
+                    </Field>
+                </div>
+                <div class="grid mb-3">
                     <Field>
                         <FieldLabel for="notes">Catatan</FieldLabel>
                         <Input
@@ -427,15 +487,69 @@ const breadcrumbs = [
                         </FieldError>
                     </Field>
                 </div>
+                <div class="grid mb-3">
+                    <Field>
+                        <div class="flex items-center gap-3">
+                            <Checkbox
+                                id="delivery_required"
+                                v-model="form.delivery_required"
+                            />
+                            <Label for="delivery_required">
+                                Antar ke alamat pelanggan
+                            </Label>
+                        </div>
+                    </Field>
+                </div>
+                <div
+                    v-if="form.delivery_required"
+                    class="grid lg:grid-cols-2 gap-3 mb-3"
+                >
+                    <Field>
+                        <FieldLabel for="delivery_fee"
+                            >Biaya Pengiriman</FieldLabel
+                        >
+                        <Input
+                            id="delivery_fee"
+                            placeholder="Masukkan biaya pengiriman"
+                            autocomplete="off"
+                            v-model="form.delivery_fee"
+                            type="number"
+                        />
+                        <FieldError>
+                            {{ form.errors.delivery_fee }}
+                        </FieldError>
+                    </Field>
+                </div>
                 <div
                     class="rounded-lg border p-4 space-y-2"
                     v-if="form.order_detail.length > 0"
                 >
-                    <div class="flex justify-between text-lg">
+                    <div class="flex justify-between">
+                        <span>Subtotal</span>
+                        <span>{{ currency(grandTotal) }}</span>
+                    </div>
+                    <div
+                        v-if="props.order?.order_pickup"
+                        class="flex justify-between"
+                    >
+                        <span>Biaya Pengambilan</span>
+                        <span>{{ currency(form.pickup_fee) }}</span>
+                    </div>
+                    <div
+                        v-if="form.delivery_required"
+                        class="flex justify-between"
+                    >
+                        <span>Biaya Pengiriman</span>
+                        <span>{{ currency(form.delivery_fee) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Diskon</span>
+                        <span>- {{ currency(form.discount) }}</span>
+                    </div>
+                    <Separator />
+                    <div class="flex justify-between text-lg font-bold">
                         <span>Total Tagihan</span>
-                        <strong>
-                            {{ currency(totalAfterDiscount) }}
-                        </strong>
+                        <span>{{ currency(totalAfterDiscount) }}</span>
                     </div>
                 </div>
                 <!-- Pembayaran -->

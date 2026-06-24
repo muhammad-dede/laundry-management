@@ -5,6 +5,7 @@ namespace App\Http\Requests\Order;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
@@ -28,6 +29,7 @@ class UpdateRequest extends FormRequest
             'customer_phone' => ['required', 'string', 'max:20'],
             'customer_address' => ['nullable', 'string', 'max:500'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'pickup_fee' => ['nullable', 'numeric', 'min:0'],
             'discount' => ['nullable', 'numeric', 'min:0'],
             'payment_type' => [
                 'required',
@@ -73,6 +75,12 @@ class UpdateRequest extends FormRequest
                 'numeric',
                 'min:0',
             ],
+            'delivery_required' => ['required', 'boolean'],
+            'delivery_fee' => [
+                Rule::requiredIf(request()->boolean('delivery_required')),
+                'numeric',
+                'min:0',
+            ],
         ];
     }
 
@@ -87,6 +95,7 @@ class UpdateRequest extends FormRequest
             'customer_name' => 'Nama Pelanggan',
             'customer_phone' => 'No. Telepon',
             'customer_address' => 'Alamat',
+            'pickup_fee' => 'Biaya Pengambilan',
             'notes' => 'Catatan',
             'discount' => 'Diskon',
             'payment_type' => 'Jenis Pembayaran',
@@ -99,6 +108,7 @@ class UpdateRequest extends FormRequest
             'order_detail.*.quantity' => 'Jumlah',
             'order_detail.*.price' => 'Harga',
             'order_detail.*.subtotal' => 'Subtotal',
+            'delivery_fee' => 'Biaya Pengiriman',
         ];
     }
 }

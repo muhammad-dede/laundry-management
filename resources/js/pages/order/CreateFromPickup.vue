@@ -160,6 +160,15 @@ const estimatedFinishDate = computed(() => {
     return finishDate;
 });
 
+watch(
+    () => form.delivery_required,
+    (value) => {
+        if (!value) {
+            form.delivery_fee = 0;
+        }
+    },
+);
+
 const submit = () => {
     if (form.order_detail.length === 0) {
         alert("Minimal 1 layanan harus dipilih");

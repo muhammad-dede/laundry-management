@@ -343,9 +343,25 @@ const breadcrumbs = [
                             </span>
                         </div>
                         <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground"
+                                >Biaya Pengambilan</span
+                            >
+                            <span class="font-medium">
+                                {{ currency(props.order?.pickup_fee ?? 0) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground"
+                                >Biaya Pengiriman</span
+                            >
+                            <span class="font-medium">
+                                {{ currency(props.order?.delivery_fee ?? 0) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
                             <span class="text-muted-foreground">Diskon</span>
                             <span class="font-medium">
-                                {{ currency(props.order?.discount ?? 0) }}
+                                - {{ currency(props.order?.discount ?? 0) }}
                             </span>
                         </div>
                         <Separator />

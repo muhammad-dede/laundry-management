@@ -5,6 +5,7 @@ namespace App\Http\Requests\Order;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -73,6 +74,12 @@ class StoreRequest extends FormRequest
                 'numeric',
                 'min:0',
             ],
+            'delivery_required' => ['required', 'boolean'],
+            'delivery_fee' => [
+                Rule::requiredIf(request()->boolean('delivery_required')),
+                'numeric',
+                'min:0',
+            ],
         ];
     }
 
@@ -99,6 +106,7 @@ class StoreRequest extends FormRequest
             'order_detail.*.quantity' => 'Jumlah',
             'order_detail.*.price' => 'Harga',
             'order_detail.*.subtotal' => 'Subtotal',
+            'delivery_fee' => 'Biaya Pengiriman',
         ];
     }
 }

@@ -68,10 +68,6 @@ class StoreFromPickupRequest extends FormRequest
                 'numeric',
                 'min:0',
             ],
-            'delivery_address' => [
-                Rule::requiredIf(request()->boolean('delivery_required')),
-                'string',
-            ],
         ];
     }
 
@@ -95,7 +91,6 @@ class StoreFromPickupRequest extends FormRequest
             'order_detail.*.price' => 'Harga',
             'order_detail.*.subtotal' => 'Subtotal',
             'delivery_fee' => 'Biaya Pengiriman',
-            'delivery_address' => 'Alamat Pengiriman',
         ];
     }
 }

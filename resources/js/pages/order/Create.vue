@@ -38,6 +38,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import useFormatter from "@/composables/useFormatter";
 
 const { currency, date } = useFormatter();
@@ -57,6 +59,8 @@ const form = useForm({
     payment_type: "",
     payment_method: "",
     order_detail: [],
+    delivery_required: false,
+    delivery_fee: 0,
 });
 
 const defaultOrderDetail = () => ({
@@ -162,9 +166,11 @@ const grandTotal = computed(() => {
     }, 0);
 });
 const totalAfterDiscount = computed(() => {
-    const discount = Math.min(Number(form.discount || 0), grandTotal.value);
-
-    return grandTotal.value - discount;
+    return (
+        Number(grandTotal.value) +
+        Number(form.delivery_fee || 0) -
+        Number(form.discount || 0)
+    );
 });
 const estimatedDays = computed(() => {
     if (form.order_detail.length === 0) {
@@ -194,6 +200,15 @@ watch(
     (value) => {
         if (value === "PAY_LATER") {
             form.payment_method = "";
+        }
+    },
+);
+
+watch(
+    () => form.delivery_required,
+    (value) => {
+        if (!value) {
+            form.delivery_fee = 0;
         }
     },
 );
@@ -417,15 +432,62 @@ const breadcrumbs = [
                         </FieldError>
                     </Field>
                 </div>
+                <div class="grid mb-3">
+                    <Field>
+                        <div class="flex items-center gap-3">
+                            <Checkbox
+                                id="delivery_required"
+                                v-model="form.delivery_required"
+                            />
+                            <Label for="delivery_required">
+                                Antar ke alamat pelanggan
+                            </Label>
+                        </div>
+                    </Field>
+                </div>
+                <div
+                    v-if="form.delivery_required"
+                    class="grid lg:grid-cols-2 gap-3 mb-3"
+                >
+                    <Field>
+                        <FieldLabel for="delivery_fee"
+                            >Biaya Pengiriman</FieldLabel
+                        >
+                        <Input
+                            id="delivery_fee"
+                            placeholder="Masukkan biaya pengiriman"
+                            autocomplete="off"
+                            v-model="form.delivery_fee"
+                            type="number"
+                        />
+                        <FieldError>
+                            {{ form.errors.delivery_fee }}
+                        </FieldError>
+                    </Field>
+                </div>
                 <div
                     class="rounded-lg border p-4 space-y-2"
                     v-if="form.order_detail.length > 0"
                 >
-                    <div class="flex justify-between text-lg">
+                    <div class="flex justify-between">
+                        <span>Subtotal</span>
+                        <span>{{ currency(grandTotal) }}</span>
+                    </div>
+                    <div
+                        v-if="form.delivery_required"
+                        class="flex justify-between"
+                    >
+                        <span>Biaya Pengiriman</span>
+                        <span>{{ currency(form.delivery_fee) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Diskon</span>
+                        <span>- {{ currency(form.discount) }}</span>
+                    </div>
+                    <Separator />
+                    <div class="flex justify-between text-lg font-bold">
                         <span>Total Tagihan</span>
-                        <strong>
-                            {{ currency(totalAfterDiscount) }}
-                        </strong>
+                        <span>{{ currency(totalAfterDiscount) }}</span>
                     </div>
                 </div>
                 <!-- Pembayaran -->

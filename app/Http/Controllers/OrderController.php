@@ -114,7 +114,9 @@ class OrderController extends Controller
                 ];
             }
             $discount = $validated['discount'] ?? 0;
-            $grandTotal = max(0, $totalAmount - $discount);
+            $deliveryFee = $validated['delivery_required'] ? $validated['delivery_fee'] : 0;
+            $grandTotal = max(0, $totalAmount + $deliveryFee - $discount);
+
             if ($validated['payment_type'] === PaymentTypeEnum::FULL_PAYMENT->value) {
                 $paymentType = PaymentTypeEnum::FULL_PAYMENT;
                 $paymentStatus = PaymentStatusEnum::PAID;
@@ -132,7 +134,10 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'order_date' => $orderDate,
                 'estimated_finish_date' => $estimatedFinishDate,
+                'delivery_required' => $validated['delivery_required'],
                 'total_amount' => $totalAmount,
+                'pickup_fee' => 0,
+                'delivery_fee' => $deliveryFee,
                 'discount' => $discount,
                 'grand_total' => $grandTotal,
                 'payment_type' => $paymentType,
@@ -159,6 +164,16 @@ class OrderController extends Controller
                     'payment_method' => $validated['payment_method'],
                     'notes' => 'Bayar Lunas',
                     'created_by' => Auth::id(),
+                ]);
+            }
+
+            if ($validated['delivery_required']) {
+                $order->orderDelivery()->create([
+                    'customer_id' => $order->customer_id,
+                    'courier_id' => null,
+                    'scheduled_at' => $order->estimated_finish_date,
+                    'delivery_status' => DeliveryStatusEnum::PENDING,
+                    'notes' => null,
                 ]);
             }
 
@@ -203,7 +218,7 @@ class OrderController extends Controller
      */
     public function edit(string $id)
     {
-        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment'])->findOrFail($id);
+        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment', 'orderPickup', 'orderDelivery'])->findOrFail($id);
 
         if ($order->order_status !== OrderStatusEnum::QUEUED) {
             return redirect()->route('order.show', $order->id)->with('error', 'Pesanan tidak dapat diedit.');
@@ -224,7 +239,7 @@ class OrderController extends Controller
      */
     public function update(UpdateRequest $request, string $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with(['orderPickup', 'orderDelivery'])->findOrFail($id);
 
         if ($order->order_status !== OrderStatusEnum::QUEUED) {
             return back()->with('error', 'Pesanan tidak dapat diedit.');
@@ -275,9 +290,10 @@ class OrderController extends Controller
                 ];
             }
 
+            $pickupFee = $validated['pickup_fee'] ?? 0;
+            $deliveryFee = $validated['delivery_required'] ? $validated['delivery_fee'] : 0;
             $discount = $validated['discount'] ?? 0;
-
-            $grandTotal = max(0, $totalAmount - $discount);
+            $grandTotal = max(0, $totalAmount + $pickupFee + $deliveryFee - $discount);
 
             if ($validated['payment_type'] === PaymentTypeEnum::FULL_PAYMENT->value) {
                 $paymentType = PaymentTypeEnum::FULL_PAYMENT;
@@ -292,7 +308,10 @@ class OrderController extends Controller
             $order->update([
                 'customer_id' => $customer->id,
                 'estimated_finish_date' => $estimatedFinishDate,
+                'delivery_required' => $validated['delivery_required'],
                 'total_amount' => $totalAmount,
+                'pickup_fee' => $pickupFee,
+                'delivery_fee' => $deliveryFee,
                 'discount' => $discount,
                 'grand_total' => $grandTotal,
                 'payment_type' => $paymentType,
@@ -317,6 +336,23 @@ class OrderController extends Controller
                 ]);
             } else {
                 $order->payment()->delete();
+            }
+
+            if ($validated['delivery_required']) {
+                $order->orderDelivery()->updateOrCreate(
+                    [
+                        'order_id' => $order->id,
+                    ],
+                    [
+                        'customer_id' => $order->customer_id,
+                        'courier_id' => null,
+                        'scheduled_at' => $estimatedFinishDate,
+                        'delivery_status' => DeliveryStatusEnum::PENDING->value,
+                        'notes' => null,
+                    ]
+                );
+            } else {
+                $order->orderDelivery()->delete();
             }
         });
 
@@ -516,7 +552,7 @@ class OrderController extends Controller
             $orderPickup->update([
                 'order_id' => $order->id,
             ]);
-            if ($order->delivery_required) {
+            if ($validated['delivery_required']) {
                 $order->orderDelivery()->create([
                     'customer_id' => $order->customer_id,
                     'courier_id' => null,
