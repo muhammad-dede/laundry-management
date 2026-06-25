@@ -14,6 +14,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderPickup;
 use App\Models\Service;
+use App\Models\User;
 use App\Services\FonnteService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -206,9 +207,11 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment', 'orderPickup', 'orderDelivery'])->findOrFail($id);
+        $order = Order::with(['customer', 'createdBy', 'orderDetails', 'orderDetails.service', 'orderStatusHistories', 'payment', 'orderPickup', 'orderDelivery', 'orderDelivery.courier'])->findOrFail($id);
+        $couriers = User::role('Courier')->get();
         return Inertia::render('order/Show', [
             'order' => $order,
+            'couriers' => $couriers,
             'paymentMethodOptions' => PaymentMethodEnum::options(),
         ]);
     }
@@ -393,7 +396,13 @@ class OrderController extends Controller
 
     public function updateStatus(string $id)
     {
-        $order = Order::with('customer')->findOrFail($id);
+        $order = Order::with(['customer', 'orderDelivery'])->findOrFail($id);
+
+        if ($order->order_status === OrderStatusEnum::READY && $order->delivery_required) {
+            if (!$order->orderDelivery || $order->orderDelivery->delivery_status !== DeliveryStatusEnum::DELIVERED) {
+                return back()->with('error', 'Pesanan harus diantar terlebih dahulu sebelum diselesaikan.');
+            }
+        }
 
         if ($order->order_status === OrderStatusEnum::COMPLETED) {
             return back()->with('error', 'Pesanan sudah selesai.');
@@ -583,5 +592,25 @@ class OrderController extends Controller
         );
 
         return redirect()->route('order.show', $order->id)->with('success', 'Pesanan berhasil ditambahkan.');
+    }
+
+    public function assignCourierDelivery(Request $request, string $id)
+    {
+        $request->validate([
+            'courier_id' => ['required', 'exists:users,id'],
+        ]);
+
+        $order = Order::with('orderDelivery')->findOrFail($id);
+
+        if (!$order->delivery_required) {
+            return back()->with('error', 'Pesanan tidak memerlukan pengiriman.');
+        }
+
+        $order->orderDelivery()->update([
+            'courier_id' => $request->courier_id,
+            'delivery_status' => DeliveryStatusEnum::ASSIGNED,
+        ]);
+
+        return back()->with('success', 'Kurir berhasil ditugaskan.');
     }
 }

@@ -72,6 +72,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::put('/{id}/update-status', 'updateStatus')->name('order.update.status');
             Route::put('/{id}/payment', 'payment')->name('order.payment');
             Route::get('/{id}/print', 'print')->name('order.print');
+            Route::put('/{id}/assign-courier-delivery', 'assignCourierDelivery')->name('order.assign-courier-delivery');
         });
     });
 
@@ -102,6 +103,14 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/', 'index')->name('pickup-task.index')->middleware('can:courier-task.view');
             Route::get('/{id}', 'show')->name('pickup-task.show')->middleware('can:courier-task.view');
             Route::put('/update-status/{id}', 'updateStatus')->name('pickup-task.update-status')->middleware('can:courier-task.update-status');
+        });
+    });
+
+    Route::prefix('delivery-task')->group(function () {
+        Route::controller(App\Http\Controllers\DeliveryTaskController::class)->group(function () {
+            Route::get('/', 'index')->name('delivery-task.index')->middleware('can:courier-task.view');
+            Route::get('/{id}', 'show')->name('delivery-task.show')->middleware('can:courier-task.view');
+            Route::put('/update-status/{id}', 'updateStatus')->name('delivery-task.update-status')->middleware('can:courier-task.update-status');
         });
     });
 

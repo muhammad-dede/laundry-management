@@ -1,7 +1,7 @@
 <script setup>
 import { Head, router, useForm } from "@inertiajs/vue3";
 import { computed, ref } from "vue";
-import { Field } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/layouts/AppLayout.vue";
@@ -27,6 +27,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import useFormatter from "@/composables/useFormatter";
 import { Badge } from "@/components/ui/badge";
 import useStatusBadge from "@/composables/useStatusBadge";
@@ -45,6 +52,7 @@ const { orderStatusBadge, paymentStatusBadge } = useStatusBadge();
 
 const props = defineProps({
     order: Object,
+    couriers: Object,
     paymentMethodOptions: Object,
 });
 
@@ -53,7 +61,12 @@ const formPayment = useForm({
 });
 
 const openUpdateStatus = ref(false);
+const openAssignCourierDelivery = ref(false);
 const openPayment = ref(false);
+
+const formAssignCourierDelivery = useForm({
+    courier_id: props.order?.order_delivery?.courier_id ?? "",
+});
 
 const grandTotal = computed(() => {
     return (props.order?.order_details ?? []).reduce((total, item) => {
@@ -110,6 +123,18 @@ const updateStatus = () => {
     );
 };
 
+const assignCourierDelivery = () => {
+    formAssignCourierDelivery.put(
+        route("order.assign-courier-delivery", props.order.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                openAssignCourierDelivery.value = false;
+            },
+        },
+    );
+};
+
 const payment = () => {
     formPayment.clearErrors();
     formPayment.put(route("order.payment", props.order.id), {
@@ -132,7 +157,27 @@ const canUpdateStatus = computed(() => {
         return false;
     }
 
+    if (orderStatus === "READY" && props.order?.delivery_required) {
+        if (props.order?.order_delivery?.delivery_status !== "DELIVERED") {
+            return false;
+        }
+    }
+
     return true;
+});
+
+const canAssignCourierDelivery = computed(() => {
+    const order = props.order;
+
+    if (!order) {
+        return false;
+    }
+
+    return (
+        order.delivery_required &&
+        order.order_status === "READY" &&
+        !order.order_delivery?.courier_id
+    );
 });
 
 const canPayment = computed(() => {
@@ -227,7 +272,7 @@ const breadcrumbs = [
                             }}
                         </Badge>
                     </div>
-                    <div class="grid">
+                    <div class="grid mb-3">
                         <p class="text-sm text-muted-foreground mb-1">
                             Status Pesanan
                         </p>
@@ -243,6 +288,28 @@ const breadcrumbs = [
                             }}
                         </Badge>
                     </div>
+                    <template v-if="props.order?.delivery_required">
+                        <div class="grid mb-3">
+                            <p class="text-sm text-muted-foreground mb-1">
+                                Status Pengiriman
+                            </p>
+                            <Badge>
+                                {{
+                                    props.order?.order_delivery
+                                        ?.delivery_status_label ?? "-"
+                                }}
+                            </Badge>
+                        </div>
+                        <div class="grid">
+                            <p class="text-sm text-muted-foreground">Kurir</p>
+                            <p class="font-medium">
+                                {{
+                                    props.order?.order_delivery?.courier
+                                        ?.name ?? "Belum Ditentukan"
+                                }}
+                            </p>
+                        </div>
+                    </template>
                 </CardContent>
             </Card>
             <!-- Informasi Detail -->
@@ -458,6 +525,78 @@ const breadcrumbs = [
                             <Button type="button" @click="updateStatus"
                                 >Update</Button
                             >
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <Dialog v-model:open="openAssignCourierDelivery">
+                    <DialogTrigger as-child>
+                        <Button type="button" v-if="canAssignCourierDelivery"
+                            >Assign Kurir Pengiriman</Button
+                        >
+                    </DialogTrigger>
+                    <DialogContent class="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle> Assign Kurir Pengiriman </DialogTitle>
+                            <DialogDescription>
+                                Pilih kurir untuk melakukan pengiriman pesanan.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm text-muted-foreground">
+                                    Invoice
+                                </p>
+                                <p class="font-medium">
+                                    {{ props.order?.invoice_number }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-muted-foreground">
+                                    Pelanggan
+                                </p>
+
+                                <p class="font-medium">
+                                    {{ props.order?.customer?.name }}
+                                </p>
+                            </div>
+                            <Field>
+                                <FieldLabel for="courier_id">
+                                    Kurir
+                                </FieldLabel>
+                                <Select
+                                    v-model="
+                                        formAssignCourierDelivery.courier_id
+                                    "
+                                    name="courier_id"
+                                >
+                                    <SelectTrigger id="courier_id">
+                                        <SelectValue
+                                            placeholder="Pilih Kurir"
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem
+                                            v-for="courier in props.couriers"
+                                            :key="courier.id"
+                                            :value="courier.id"
+                                        >
+                                            {{ courier.name }}
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose as-child>
+                                <Button variant="outline">Batal</Button>
+                            </DialogClose>
+                            <Button
+                                type="button"
+                                :disabled="formAssignCourierDelivery.processing"
+                                @click="assignCourierDelivery"
+                            >
+                                Simpan
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

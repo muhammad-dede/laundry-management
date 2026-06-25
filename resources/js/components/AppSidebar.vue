@@ -23,6 +23,7 @@ import {
     TrendingDown,
     TrendingUp,
     Truck,
+    Send,
 } from "lucide-vue-next";
 import AppLogo from "./AppLogo.vue";
 
@@ -106,6 +107,13 @@ const mainNavItems = [
                 title: "Pengambilan",
                 href: route("pickup-task.index"),
                 routeMatch: "pickup-task.*",
+                permission: "courier-task.view",
+            },
+            {
+                icon: Send,
+                title: "Pengiriman",
+                href: route("delivery-task.index"),
+                routeMatch: "delivery-task.*",
                 permission: "courier-task.view",
             },
         ],

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PickupStatusEnum;
-use App\Models\OrderPickup;
+use App\Enums\DeliveryStatusEnum;
+use App\Models\OrderDelivery;
 use App\Services\FonnteService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class PickupTaskController extends Controller
+class DeliveryTaskController extends Controller
 {
     public function __construct(
         protected FonnteService $fonnte
@@ -26,7 +26,7 @@ class PickupTaskController extends Controller
         $search = $filters['search'] ?? null;
         $per_page = $filters['per_page'] ?? 5;
 
-        $data = OrderPickup::query()
+        $data = OrderDelivery::query()
             ->with(['order', 'customer', 'courier'])
             ->when(
                 !auth()->user()->hasRole('Super Admin'),
@@ -41,13 +41,16 @@ class PickupTaskController extends Controller
                     $q->orWhereHas('courier', function ($courier) use ($search) {
                         $courier->where('name', 'like', "%{$search}%");
                     });
+                    $q->orWhereHas('order', function ($order) use ($search) {
+                        $order->where('invoice_number', 'like', "%{$search}%");
+                    });
                 });
             })
             ->orderBy('created_at', 'desc')
             ->paginate($per_page)
             ->withQueryString();
 
-        return Inertia::render('pickup-task/Index', [
+        return Inertia::render('delivery-task/Index', [
             'filters' => $filters,
             'data' => $data,
         ]);
@@ -58,7 +61,7 @@ class PickupTaskController extends Controller
      */
     public function show(string $id)
     {
-        $pickup = OrderPickup::query()
+        $delivery = OrderDelivery::query()
             ->with(['customer', 'courier'])
             ->when(
                 !auth()->user()->hasRole('Super Admin'),
@@ -67,15 +70,15 @@ class PickupTaskController extends Controller
             ->whereKey($id)
             ->firstOrFail();
 
-        return Inertia::render('pickup-task/Show', [
-            'pickup' => $pickup,
+        return Inertia::render('delivery-task/Show', [
+            'delivery' => $delivery,
         ]);
     }
 
     public function updateStatus(string $id)
     {
-        $pickup = OrderPickup::query()
-            ->with(['customer', 'courier'])
+        $delivery = OrderDelivery::query()
+            ->with(['customer', 'courier', 'order'])
             ->when(
                 auth()->user()->hasRole('Courier'),
                 fn($query) => $query->where('courier_id', auth()->id())
@@ -83,59 +86,56 @@ class PickupTaskController extends Controller
             ->whereKey($id)
             ->firstOrFail();
 
-        if ($pickup->pickup_status === PickupStatusEnum::RECEIVED) {
-            return back()->with('error', 'Pengambilan sudah selesai.');
+        if (!$delivery->courier_id) {
+            return back()->with('error', 'Kurir belum ditugaskan.');
         }
 
-        $newStatus = match ($pickup->pickup_status) {
-            PickupStatusEnum::ASSIGNED => PickupStatusEnum::ON_THE_WAY,
-            PickupStatusEnum::ON_THE_WAY => PickupStatusEnum::PICKED_UP,
-            PickupStatusEnum::PICKED_UP => PickupStatusEnum::RECEIVED,
+        if ($delivery->delivery_status === DeliveryStatusEnum::DELIVERED) {
+            return back()->with('error', 'Pengiriman sudah selesai.');
+        }
+
+        $newStatus = match ($delivery->delivery_status) {
+            DeliveryStatusEnum::ASSIGNED => DeliveryStatusEnum::ON_THE_WAY,
+            DeliveryStatusEnum::ON_THE_WAY => DeliveryStatusEnum::DELIVERED,
             default => null,
         };
 
         if (!$newStatus) {
-            return back()->with('error', 'Status pickup tidak dapat diubah.');
+            return back()->with('error', 'Status tidak dapat diubah.');
         }
 
-        $pickupAt = $pickup->pickup_at;
-        if ($newStatus === PickupStatusEnum::PICKED_UP) {
-            $pickupAt = Carbon::now();
+        $deliveredAt = $delivery->delivered_at;
+        if ($newStatus === DeliveryStatusEnum::DELIVERED) {
+            $deliveredAt = Carbon::now();
         }
 
-        DB::transaction(function () use ($pickup, $newStatus, $pickupAt) {
-            $pickup->update([
-                'pickup_status' => $newStatus,
-                'pickup_at' => $pickupAt,
+        DB::transaction(function () use ($delivery, $newStatus, $deliveredAt) {
+            $delivery->update([
+                'delivery_status' => $newStatus,
+                'delivered_at' => $deliveredAt,
             ]);
         });
 
         try {
             $message = match ($newStatus) {
-                PickupStatusEnum::ON_THE_WAY => implode("\n", [
-                    "Halo {$pickup->customer->name},",
+                DeliveryStatusEnum::ON_THE_WAY => implode("\n", [
+                    "Halo {$delivery->customer->name},",
                     "",
-                    "Kurir sedang menuju lokasi untuk menjemput laundry Anda.",
+                    "Laundry Anda sedang dalam perjalanan.",
                     "",
-                    "Kurir: {$pickup->courier?->name}",
-                    "",
-                    "Terima kasih."
-                ]),
-
-                PickupStatusEnum::PICKED_UP => implode("\n", [
-                    "Halo {$pickup->customer->name},",
-                    "",
-                    "Laundry Anda telah berhasil dijemput oleh kurir dan sedang dalam perjalanan ke outlet.",
+                    "Kurir: {$delivery->courier?->name}",
                     "",
                     "Terima kasih."
                 ]),
 
-                PickupStatusEnum::RECEIVED => implode("\n", [
-                    "Halo {$pickup->customer->name},",
+                DeliveryStatusEnum::DELIVERED => implode("\n", [
+                    "Halo {$delivery->customer->name},",
                     "",
-                    "Laundry Anda telah diterima oleh outlet dan akan segera diproses.",
+                    "Laundry Anda telah berhasil diantarkan.",
                     "",
-                    "Terima kasih."
+                    "Invoice: {$delivery->order?->invoice_number}",
+                    "",
+                    "Terima kasih telah menggunakan layanan kami."
                 ]),
 
                 default => null,
@@ -143,17 +143,17 @@ class PickupTaskController extends Controller
 
             if ($message) {
                 $this->fonnte->send(
-                    $pickup->customer->phone,
+                    $delivery->customer->phone,
                     $message
                 );
             }
         } catch (\Throwable $e) {
-            Log::error('Gagal mengirim notifikasi pickup', [
-                'pickup_id' => $pickup->id,
+            Log::error('Gagal mengirim notifikasi', [
+                'delivery_id' => $delivery->id,
                 'error' => $e->getMessage(),
             ]);
         }
 
-        return back()->with('success', "Status pengambilan berhasil diubah menjadi {$newStatus->label()}.");
+        return back()->with('success', "Status berhasil diubah menjadi {$newStatus->label()}.");
     }
 }

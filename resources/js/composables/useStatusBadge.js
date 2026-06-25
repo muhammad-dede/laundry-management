@@ -75,9 +75,38 @@ export default function useStatusBadge() {
         );
     };
 
+    const deliveryStatusBadge = (status) => {
+        const statuses = {
+            PENDING: {
+                label: "Pending",
+                class: "bg-indigo-500 text-white hover:bg-indigo-500",
+            },
+            ASSIGNED: {
+                label: "Kurir Ditugaskan",
+                class: "bg-blue-500 text-white hover:bg-blue-500",
+            },
+            ON_THE_WAY: {
+                label: "Dalam Perjalanan",
+                class: "bg-purple-500 text-white hover:bg-purple-500",
+            },
+            DELIVERED: {
+                label: "Terkirim",
+                class: "bg-emerald-500 text-white hover:bg-emerald-500",
+            },
+        };
+
+        return (
+            statuses[status] ?? {
+                label: status,
+                class: "",
+            }
+        );
+    };
+
     return {
         orderStatusBadge,
         paymentStatusBadge,
         pickupStatusBadge,
+        deliveryStatusBadge,
     };
 }
